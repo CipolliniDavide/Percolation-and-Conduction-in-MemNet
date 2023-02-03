@@ -5,12 +5,13 @@ L=21
 diag=0
 
 # For good OC
-#w_init='good_OC'
-#svp='OutputGridAdiabatic_GoodOC'
+w_init='good_OC'
+svp='OutputGridAdiabatic_GoodOC'
 
 # For Poor OC
-w_init='None'
-svp='OutputGridAdiabatic'
+#w_init='None'
+#svp='OutputGridAdiabatic'
+
 
 b_start=0
 b_end=10

@@ -43,7 +43,7 @@ def plot_heatmap_ent(df, ykey, yloop,
     fig = plt.figure('Entropy', figsize=(10, 8))
     ax = fig.subplots(nrows=1, ncols=1)
     im = ax.imshow(1-array, origin='lower', interpolation='bicubic', aspect=aspect)
-    set_ticks_label(ax=ax, ax_label='p', data=frac_of_mem_el, ax_type='x', num=5, valfmt="{x:.2f}",
+    set_ticks_label(ax=ax, ax_label='p\nMemristor density', data=frac_of_mem_el, ax_type='x', num=5, valfmt="{x:.1f}",
                     ticks=np.arange(len(frac_of_mem_el)), tick_lab=frac_of_mem_el)
     ticks = np.linspace(start=0, stop=len(yloop), num=5, endpoint=True, dtype=int)
     ticks[-1] = ticks[-1] - 1
@@ -56,7 +56,7 @@ def plot_heatmap_ent(df, ykey, yloop,
     set_ticks_label(ax=cbar_edg.ax, ax_label=r'$\mathbf{1-\sigma}$',
                     data=1-array.reshape(-1),
                     ax_type='y',
-                    num=5, valfmt="{x:.2e}")
+                    num=5, valfmt="{x:.2f}")
                     # ticks=np.arange(len(frac_of_mem_el)), tick_lab=frac_of_mem_el)
     # create_colorbar(fig, ax, mapp=im,
     #                 array_of_values=1-array,
@@ -64,7 +64,7 @@ def plot_heatmap_ent(df, ykey, yloop,
     #                 fontdict_cbar_label={'label': r'$\mathbf{1-\sigma}$'},
     #                 fontdict_cbar_tickslabel={'fontweight':'bold'}, fontdict_cbar_ticks=None)
     plt.tight_layout()
-    plt.savefig(join(save_path + '{:s}_{:s}.png'.format(name_fig, key)))
+    plt.savefig(join(save_path + '{:s}_{:s}.svg'.format(name_fig, key)), format='svg', dpi=1200)
     # plt.show()
     plt.close('all')
 
@@ -122,7 +122,7 @@ def net_entropy_from_conductances(adj_matrix):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-svp', '--save_path', default='OutputGridAdiabatic', type=str)
+    parser.add_argument('-svp', '--save_path', default='OutputGridAdiabaticII', type=str)
     parser.add_argument('-lin_size', '--linear_size', default=21, type=int)
     parser.add_argument('-w_init', '--weight_init', default='None', type=str)
     parser.add_argument('-comp_ds', '--compute_dataset', default=0, type=int)
@@ -195,12 +195,17 @@ if __name__ == "__main__":
     # df['G_star_Ventra'] = df.apply(lambda row: (row.G - row.g_min) / (row.g_max - row.g_min), axis=1)
 
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures/Vbias' + save_path_ds.split('Vbias')[1]
-    save_path_figures = save_path_ds.split('DS')[0] + 'Figures/'
+
+    df = df.loc[df['batch'] < 100]
+    save_path_figures = save_path_ds.split('DS')[0] + 'FiguresBatch100/'
+    save_path_figures = save_path_ds.split('DS')[0] + 'FiguresBatch100OnlyP0.3_0.7/'
+
+    # save_path_figures = save_path_ds.split('DS')[0] + 'Figures/'
     utils.ensure_dir(save_path_figures)
 
 
     df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
-    # df = df[df['frac_of_mem_elements'].isin([.3, .7])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    df = df[df['frac_of_mem_elements'].isin([.3, .7])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
 
     # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     for key in ['Ent', 'CE', 'Small_Ent', 'Small_CE']:
@@ -217,7 +222,7 @@ if __name__ == "__main__":
                              ykey='Vbias',
                              valfmt_ylab='{x:.2f}',
                              aspect=.5,
-                             ylabel=r'$\mathbf{V}$',
+                             ylabel='Voltage input\n'+r'$\mathbf{V}$ [a.u.]',
                              save_path=save_path_heatmap + 'Ratio{:.0e}'.format(r),
                              yloop=np.arange(1, 16, 1), #np.sort(df['Vbias'].unique()),
                              loc=3,
@@ -228,12 +233,12 @@ if __name__ == "__main__":
                                 key_y=key,
                                 key_x='Vbias',
                                 key_legend='frac_of_mem_elements',
-                                ylabel=r'$\mathbf{\sigma}$',
+                                ylabel='Entropy\n'+r'$\mathbf{\sigma}$',
                                 save_path=save_path_figures_G_wtap,
                                 normalize=False,
                                 ymin_max=None,
-                                xlabel='V',
-                                legendlabel='p',
+                                xlabel='V [a.u.]\nVoltage input',
+                                legendlabel='Memristor density\np',
                                 legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
                                 x_loop=np.sort(np.unique(np.array(df['Vbias']))),
                                 name_fig='Ratio{:.0e}'.format(r),
@@ -251,9 +256,9 @@ if __name__ == "__main__":
                                 normalize=False,
                                 key_x='Vbias',
                                 key_legend='ratio',
-                                ylabel=r'$\mathbf{\sigma}$',
+                                ylabel='Entropy\n'+r'$\mathbf{\sigma}$',
                                 save_path=save_path_figures_G_star,
-                                xlabel='V',
+                                xlabel='V [a.u.]\nVoltage input',
                                 legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
                                 # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
                                 # ratio=np.sort(df['ratio'].unique()),
@@ -274,7 +279,7 @@ if __name__ == "__main__":
             plot_heatmap_ent(df=df[df['Vbias'].isin([v])],
                              key=key,
                              ykey='ratio',
-                             ylabel=r'$\mathbf{G_{max}/G_{min}}$',
+                             ylabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
                              save_path=save_path_heatmap + 'Vbias{:.2f}'.format(v),
                              yloop=np.sort(df['ratio'].unique()),
                              loc=3,
@@ -287,10 +292,10 @@ if __name__ == "__main__":
                                 normalize=False,
                                 key_x='frac_of_mem_elements',
                                 key_legend='ratio',
-                                ylabel=r'$\mathbf{\sigma}$',
+                                ylabel='Entropy\n'+r'$\mathbf{\sigma}$',
                                 save_path=save_path_figures_vbias_wtap,
-                                xlabel='p',
-                                legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
+                                xlabel='Memristor density\n'+'p',
+                                legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
                                 # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
                                 # ratio=np.sort(df['ratio'].unique()),
                                 legend_loop=np.sort(np.unique(np.array(df['ratio']))),

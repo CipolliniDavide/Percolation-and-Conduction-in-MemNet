@@ -113,7 +113,7 @@ def plot_evol(rows, cols, dictionary, save_fold, plot_second_row='ent'):
         # pdf, _, bins = utils.empirical_pdf_and_cdf(w_norm, bins=20)
         # plt.hist(bins[1:], pdf, alpha=.6, label='t={:f}'.format(inputsignal.t_list[i]))
     plt.legend()
-    plt.savefig(save_path+'histogram_weights.png')
+    plt.savefig(save_path+'histogram_weights.svg', format='svg', dpi=1200)
     plt.close()
 
     fig = plt.figure('', figsize=(8,8))
@@ -167,11 +167,12 @@ def plot_evol(rows, cols, dictionary, save_fold, plot_second_row='ent'):
                      y_label_2ndrow=y_label_2ndrow,
                      src=src,  # G=net.G,
                      coordinates=coordinates,
-                     number_of_plots=len(H_list) // 40,
+                     number_of_plots=len(H_list) // 4,
                      node_voltage_list=node_voltage_list,
                      title='p={:.2f}, '.format(1-net_param_loc.frac_of_static_elements) +\
                            r'$\mathbf{G_{max}/G_{min}}$'+'={:.0e}'.format(dictionary.ratio),
-                     save_path=save_evol)
+                     save_path=save_evol,
+                     format='svg')
 
     # # time_list.append((time.time() - start_time))
     # make_gif(frame_folder=save_evol + '/H_Evolution', gif_name='memNet.gif', images_format='png',
@@ -198,8 +199,8 @@ if __name__ == "__main__":
     net_param = edict({'rows': 5,
                        'cols': 5,
                        'frac_of_static_elements': .3,
-                       'weight_init': None,  # 'rand',
-                       # 'weight_init': 'good_OC',
+                       # 'weight_init': None,  # 'rand',
+                       'weight_init': 'good_OC',
                        'seed': 2})
 
     sim_param = edict({'T': 1.5,  # 4e-3, # [s]
@@ -235,10 +236,10 @@ if __name__ == "__main__":
     batch = 3
     # frac_stat_el_list = np.round(np.arange(0, 1, .1, dtype=np.float16), decimals=1)
     # p = [.3, .4, .6, .7]
-    p = [1]
+    p = [.3, .7]
     frac_stat_el_list = 1 - np.array(p)# [.2, .5, .8]
     # ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8]  # 1e9, 1e10]
-    ratio_list = [1e3]
+    ratio_list = [1e6]
     # V_bias_list = np.arange(0.1, 16, 1)
     V_bias_list = [15]
     l = [edict({'ratio': r, 'frac_of_static_elements': f, 'batch': b, 'Vbias': Vbias})

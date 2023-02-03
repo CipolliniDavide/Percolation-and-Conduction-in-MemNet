@@ -26,7 +26,7 @@ class visualize:
                      cb_nodes_lab='', cb_edge_lab='', edge_vmin=None, edge_vmax=None, vmin=None, vmax=None,
                      up_text=.3, hor_text=0,
                      node_size=100, numeric_label=False,
-                     labels=None, save_fold='./', title='', show=False):
+                     labels=None, save_fold='./', title='', show=False, width=10):
 
         if ax is None:
             fig = plt.figure(figsize=figsize)
@@ -60,7 +60,7 @@ class visualize:
                                  # labels=dict(labels),
                                  edge_cmap=edge_cmap,
                                  # cmap=nodes_cmap,
-                                 width=4,
+                                 width=width,
                                  # edge_color=weights,
                                  # edge_vmin=np.min(weights),
                                  # edge_vmax=np.max(weights)
@@ -73,7 +73,7 @@ class visualize:
                                  #labels=dict(labels),
                                  edge_cmap=edge_cmap,
                                  # cmap=nodes_cmap,
-                                 width=4,
+                                 width=width,
                                  edge_color=weights,
                                  edge_vmin=np.min(weights),
                                  edge_vmax=np.max(weights))
@@ -96,7 +96,7 @@ class visualize:
                              vmax=vmax,
                              # labels=dict(labels),
                              edge_cmap=edge_cmap,
-                             width=4,
+                             width=width,
                              edge_color=weights,
                              edge_vmin=edge_vmin,
                              edge_vmax=edge_vmax,

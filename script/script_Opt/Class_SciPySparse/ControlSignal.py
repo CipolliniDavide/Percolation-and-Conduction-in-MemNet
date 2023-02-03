@@ -64,6 +64,8 @@ class ControlSignal():
 
     def plot_V(self, ax=None):
         from matplotlib import pyplot as plt
+        from .visual_utils import set_ticks_label, set_legend
+
         if ax is None:
             fig = plt.figure('volt_input', figsize=(10, 10))
             ax = fig.add_subplot(111)
@@ -75,11 +77,9 @@ class ControlSignal():
                         label='Node ' + str(self.src[v]), linewidth=2)
             color = p[0].get_color()
             ax.plot([self.t_list[i] for i in float_index], [0] * len(float_index), 'x', color=color, linewidth=2)
-        ax.set_xlabel('Time [s]', fontsize=20)
-        ax.set_ylabel('Voltage [V]', fontsize=20)
-        ax.tick_params(axis='both', labelsize='x-large')
-        # ax.set_yticks(fontsize=15)
-        ax.legend(fontsize=15)
+        set_legend(ax=ax, title='', ncol=1, loc=0)
+        set_ticks_label(ax=ax, ax_type='y', data=self.V_list, ax_label='Voltage [V]')
+        set_ticks_label(ax=ax, ax_type='x', data=self.t_list, ax_label='Time [s]')
         ax.grid()
         return ax
 

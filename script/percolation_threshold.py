@@ -28,7 +28,7 @@ def plot(frac_of_mem_elements,
          figsize=(8, 8),
          save_path='./',
          ylabel='Probability of connected cluster',
-         figname='percolationThreshold.png'
+         figname='percolationThreshold', format='svg', dpi=1200
          ):
     fig = plt.figure('percolation thresh', figsize=figsize)
     ax = fig.subplots(nrows=1, ncols=1)
@@ -36,12 +36,12 @@ def plot(frac_of_mem_elements,
     ax.plot(frac_of_mem_elements, prob_path , marker='^',)
     ax.vlines(x=pc, ymin=0, ymax=1, colors='orange', ls='--', lw=3, alpha=.6)
     set_ticks_label(ax=ax, ax_label=ylabel, data=np.array([1, 0]), ax_type='y', num=5, valfmt="{x:.1f}")
-    set_ticks_label(ax=ax, ax_label='p', ax_type='x', num=5,
+    set_ticks_label(ax=ax, ax_label='p\nMemristor density', ax_type='x', num=5,
                     valfmt="{x:.2f}", add_ticks=[pc], data=[],
                     ticks=[.1, pc, 1],
                     )
     plt.tight_layout()
-    # plt.savefig(join('{:s}{:s}'.format(save_path, figname)))
+    plt.savefig(join('{:s}{:s}.{:s}'.format(save_path, figname, format)), dpi=dpi)
     # plt.show()
     # plt.close()
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # parser.add_argument('-diag', '--diagonals', default=0, type=int)
     # parser.add_argument('-b_start', '--batch_start', default=0, type=int)
     # parser.add_argument('-b_end', '--batch_end', default=20, type=int)
-    parser.add_argument('-b', '--batch', default=20, type=int)
+    parser.add_argument('-b', '--batch', default=500, type=int)
     parser.add_argument('-xs', '--xstep', default=.01, type=float)
     parser.add_argument('-linsize', '--L', default=21, type=int)
     # parser.add_argument('-nc', '--ncols', default=21, type=int)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     #                                                                                args.ncols))
     save_path = join(root, '{:}/'.format(args.save_path))
     utils.ensure_dir(save_path)
-    L_list = [1000]#[21, 41, 51, 61, 71, 81, 100]
+    L_list = [args.L]#[21, 41, 51, 61, 71, 81, 100]
     # L_list = [args.L]
     for L in L_list:
         save_path_figures_net = save_path + 'NetFig/'
@@ -153,16 +153,16 @@ if __name__ == "__main__":
 
         pc_arr[i] = frac_of_mem_elements[prob_path >= .5][0]
 
-        # plot(frac_of_mem_elements,
-        #      prob_path,
-        #      pc=pc_arr[i],
-        #      figsize=(8, 6),
-        #      save_path=save_path,
-        #      ylabel='Prob. of mem. spanning cluster',
-        #      figname='{:s}.png'.format(save_name)
-        #      )
-        # plt.show()
-        # plt.close()
+        plot(frac_of_mem_elements,
+             prob_path,
+             pc=pc_arr[i],
+             figsize=(8, 6),
+             save_path=save_path,
+             ylabel='Prob. of mem. spanning cluster',
+             figname='{:s}.png'.format(save_name)
+             )
+        plt.show()
+        plt.close()
     plt.plot(pc_arr)
 
 

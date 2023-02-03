@@ -2,7 +2,7 @@ from easydict import EasyDict as edict
 
 net_param = edict({'rows': 5,
                    'cols': 5,
-                   'frac_of_static_elements': .3,
+                   'frac_of_static_elements': 0,
                    'weight_init': None,  #'rand',
                    'seed': 2})
 

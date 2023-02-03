@@ -199,11 +199,11 @@ def set_ticks_label(ax, ax_type, data, num=5, valfmt="{x:.2f}", ticks=None, only
                         fontdict_ticks_label={'weight':'bold', 'size': 'x-large'},
                     ax_label='', fontdict_label={'weight': 'bold', 'size': 'xx-large', 'color': 'black'}, scale=None, add_ticks=[]):
 
-    fontdict_ticks_label_standard = {'weight':'bold', 'size': 'x-large' }
+    fontdict_ticks_label_standard = {'weight':'bold', 'size': 'x-large'}#, 'fontfamily': 'serif' }
     if fontdict_ticks_label is not None:
         fontdict_ticks_label_standard.update(fontdict_ticks_label)
 
-    fontdict_label_standard = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+    fontdict_label_standard = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}#, 'fontfamily': 'serif'}
     if fontdict_label is not None:
         fontdict_label_standard.update(fontdict_label)
 
@@ -217,7 +217,11 @@ def set_ticks_label(ax, ax_type, data, num=5, valfmt="{x:.2f}", ticks=None, only
          ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
     if ticks is None:
-        ticks = np.concatenate((np.linspace(start=min(data), stop=max(data), num=num, endpoint=True), add_ticks))
+        ticks = np.concatenate((np.linspace(start=np.min(data), stop=np.max(data), num=num, endpoint=True), add_ticks))
+        if scale == 'log':
+            # data here must be order of magnitude
+            ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=num, endpoint=True), add_ticks))
+
     if only_ticks:
         tick_lab = [''] * len(ticks)
     else:

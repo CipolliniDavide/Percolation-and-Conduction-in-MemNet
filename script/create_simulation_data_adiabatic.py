@@ -6,7 +6,7 @@ from script_Opt.Class_SciPySparse.anim_vis import plot_H_evolution
 from script_Opt.Class_SciPySparse.make_gif import make_gif
 from script_Opt.Class_SciPySparse.visualize import visualize
 from script_Opt.Class_SciPySparse.visual_utils import set_ticks_label, set_legend
-from script_Opt.infotheory.density import batch_beta_relative_entropy
+# from script_Opt.infotheory.density import batch_beta_relative_entropy
 
 import numpy as np
 import pandas as pd
@@ -315,9 +315,9 @@ if __name__ == "__main__":
 
 
     for key, ylabel, valfmt, name_, norm in zip(['Gnw_rec.npy', 'net_entropy.npy'],
-                                                [r'$\mathbf{\frac{(G_{nw}-G_{nw}(V=0))G_{min}}{G_{max}}}$', #+ ' [a.u]',
-                                                 r'$\mathbf{\sigma}$'],
-                                                ["{x:.2e}", "{x:.2f}"],
+                                                ['Conductance\n'+r'$\mathbf{\frac{(G_{nw}-G_{nw}(V=0))G_{min}}{G_{max}}}$', #+ ' [a.u]',
+                                                 'Entropy\n'+r'$\mathbf{\sigma}$'],
+                                                ["{x:.1e}", "{x:.1f}"],
                                                 ['Gnw', 'Ent'],
                                                 [True, False]):
         save_path_figures = join(root,
@@ -328,7 +328,7 @@ if __name__ == "__main__":
 
         max_list = list()
         min_list = list()
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(8, 6))
         for item in tqdm(l):
             V_rec = np.load(file=item.save_path + 'V_rec.npy')
             Gnw_rec = np.load(file=item.save_path + key)
@@ -344,22 +344,22 @@ if __name__ == "__main__":
             min_list.append(y_data.min())
 
             ax.plot(v_eq, y_data, marker=".", markersize=3,
-                    label=r'$\mathbf{G_{max}/G_{min}}=$' + '{:.0e}'.format(item.ratio)
+                    label='{:.0e}'.format(item.ratio)
                     )
-        set_ticks_label(ax=ax, ax_type='y', num=10, data=np.reshape([max_list, min_list], -1),
+        set_ticks_label(ax=ax, ax_type='y', num=5, data=np.reshape([max_list, min_list], -1),
                         ax_label=ylabel,
                         valfmt=valfmt,
                         fontdict_ticks_label={'size': 'large'},
                         fontdict_label={'color': 'black'})
-        set_ticks_label(ax=ax, ax_type='x', num=10, data=v_eq,
-                        ax_label='V [a.u]',
+        set_ticks_label(ax=ax, ax_type='x', num=5, data=v_eq,
+                        ax_label='V [a.u.]\nVoltage input',
                         valfmt="{x:.1f}",
                         fontdict_ticks_label={'size': 'large'},
                         fontdict_label={'color': 'black'})
-        ax.set_title('p={:.2f}'.format(item.frac_mem_el), fontweight='bold', fontsize='x-large')
-        set_legend(ax=ax)
+        # ax.set_title('p={:.2f}'.format(item.frac_mem_el), fontweight='bold', fontsize='x-large', family='Courier')
+        set_legend(ax=ax, title='Interaction strength\n'+ r'$\mathbf{G_{max}/G_{min}}$')
         plt.tight_layout()
-        plt.savefig(save_path_figures + '{:s}_vs_Voltage.png'.format(name_))
+        plt.savefig(save_path_figures + '{:s}_vs_Voltage.svg'.format(name_), format='svg', dpi=1200)
     a=0
 
 

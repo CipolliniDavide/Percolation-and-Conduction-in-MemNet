@@ -17,7 +17,7 @@ def plot_H_evolution_multiproc(H_Horizon,
                      src, eff_cond_list, desired_eff_conductance, save_path,
                      numeric_label=False,
                      y_label_2ndrow='Eff. Cond. [S]',
-                     number_of_plots=10, alpha=.25, t1=None):
+                     number_of_plots=10, alpha=.25, t1=None, format='png', dpi=1200):
 
     save_path = save_path + '/H_Evolution/'
     utils.ensure_dir(save_path)
@@ -94,7 +94,8 @@ def plot_H_evolution(H_Horizon,
                      numeric_label=False,
                      title='',
                      y_label_2ndrow=r'$\mathbf{G_{nw}}$ [S]',
-                     number_of_plots=10, alpha=.25, t1=None):
+                     number_of_plots=10, alpha=.25, t1=None,
+                     format='png', dpi=1200):
 
     save_path = save_path + '/H_Evolution/'
     utils.ensure_dir(save_path)
@@ -154,7 +155,7 @@ def plot_H_evolution(H_Horizon,
             ax2.axvspan(t1, np.max(t_list_Horizon), color='y', alpha=0.2, lw=0)
         plt.suptitle(title, weight='bold', size='xx-large')
         plt.tight_layout()
-        plt.savefig(save_path+'{:04d}.png'.format(time_index))
+        plt.savefig(save_path+'{:04d}.{:s}'.format(time_index, format), format=format, dpi=1200)
         plt.close('all')
 
 
