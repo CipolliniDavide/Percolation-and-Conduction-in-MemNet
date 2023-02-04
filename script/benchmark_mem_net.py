@@ -18,7 +18,7 @@ from script_Opt.Class_SciPySparse.visual_utils import set_ticks_label, set_legen
 
 def optimized_alg_SciPySparse(N, src, gnd):
     from script_Opt.Class_SciPySparse.mem_parameters import mem_param, sim_param, volt_param, net_param, train_param, env_param
-    from script_Opt.Class_SciPySparse.MemNetwork_mixed_benchmark import MemNet
+    from script_Opt.Class_SciPySparse.MemNetwork_mixed import MemNet
     from script_Opt.Class_SciPySparse.ControlSignal import ControlSignal
 
     time_list = []
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     print(save_path)
 
 
-    # t_scipy, n_ed_scipy = optimized_alg_SciPySparse(N, src, gnd)
+    t_scipy, n_ed_scipy = optimized_alg_SciPySparse(N, src, gnd)
     # t_unop, n_ed_netX = unoptimized_alg_NetworkX(N, src, gnd)
 
     import pandas as pd
@@ -82,33 +82,36 @@ if __name__ == "__main__":
     t_unop = np.load(save_path+'time_unoptAlg_NetworkX.npy')/60
     # # fig, [ax, ax2] = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
 
+    number_of_edges = 2*np.power(N, 2)-2*N
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(11, 10))
-    ax.plot(N, t_scipy, '-o', label='Our')
-    ax.plot(N, t_unop, '-o', label='Source')
+    ax.plot(number_of_edges, t_scipy, '-o', label='Our implementation')
+    ax.plot(number_of_edges, t_unop, '-o', label='From literature')
     # ax.plot(N ** 2, t_scipy_mix, '-o', label='SciPy_mixed')
     # ax.plot(N ** 2, np.array(t_jl['time']), '-o', label='Julia')
     set_ticks_label(ax=ax, ax_label='Time [min]', data=np.concatenate((t_scipy, t_unop)),
                     ax_type='y', num=5, valfmt="{x:.1f}")
-    set_ticks_label(ax=ax, ax_label='Number of nodes', data=N,
-                    ax_type='x', num=5, valfmt="{x:.1f}")
-    set_legend(ax=ax, title='Implementation', ncol=1, loc=1)
+    set_ticks_label(ax=ax, ax_label='Number of memristors', data=number_of_edges,
+                    ax_type='x', num=5, valfmt="{x:.0f}")
+    set_legend(ax=ax, title='', ncol=1, loc=1)
     plt.tight_layout()
     plt.savefig(save_path+'benchmark.svg', format='svg', dpi=1200)
     plt.show()
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(11, 10))
-    ax.semilogy(N, t_scipy, '-o', label='SciPy')
-    ax.semilogy(N, t_unop, '-o', label='Source')
+    ax.semilogy(number_of_edges, t_scipy, '-o', label='Our implementation')
+    ax.semilogy(number_of_edges, t_unop, '-o', label='From literature')
     # ax.plot(N ** 2, t_scipy_mix, '-o', label='SciPy_mixed')
     # ax.plot(N ** 2, np.array(t_jl['time']), '-o', label='Julia')
     set_ticks_label(ax=ax, ax_label='Time [min]', data=[0, 2], add_ticks=[.1],
                     ax_type='y', valfmt="{x:.1f}", scale='log')
-    set_ticks_label(ax=ax, ax_label='Number of nodes', data=N,
-                    ax_type='x', num=5, valfmt="{x:.0f}")
-    set_legend(ax=ax, title='Implementation', ncol=1, loc=1)
+    set_ticks_label(ax=ax, ax_label='Number of memristors', data=number_of_edges,
+                    ax_type='x', num=5, valfmt="{x:.1e}")
+    set_legend(ax=ax, title='', ncol=1, loc=1)
     plt.tight_layout()
     plt.savefig(save_path + 'log_benchmark.svg', format='svg', dpi=1200)
     plt.show()
+
+    a=0
 
     # ax2.plot(n_ed_scipy, t_scipy, '-o', label='SciPySparse')
     # ax2.plot(n_ed_netX, t_NetX, '-o', label='NetworkX')
