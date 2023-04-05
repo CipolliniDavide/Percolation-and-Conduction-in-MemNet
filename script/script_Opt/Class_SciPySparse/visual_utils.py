@@ -6,6 +6,26 @@ import matplotlib
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 from matplotlib.collections import LineCollection
 
+def align_yaxis(ax1, ax2):
+    y_lims = np.array([ax.get_ylim() for ax in [ax1, ax2]])
+
+    # force 0 to appear on both axes, comment if don't need
+    y_lims[:, 0] = y_lims[:, 0].clip(None, 0)
+    y_lims[:, 1] = y_lims[:, 1].clip(0, None)
+
+    # normalize both axes
+    y_mags = (y_lims[:,1] - y_lims[:,0]).reshape(len(y_lims),1)
+    y_lims_normalized = y_lims / y_mags
+
+    # find combined range
+    y_new_lims_normalized = np.array([np.min(y_lims_normalized), np.max(y_lims_normalized)])
+
+    # denormalize combined range to get new axes
+    new_lim1, new_lim2 = y_new_lims_normalized * y_mags
+    ax1.set_ylim(new_lim1)
+    ax2.set_ylim(new_lim2)
+
+
 def plot_axes(ax, fig=None, geometry=(1,1,1)):
     if fig is None:
         fig = plt.figure()
