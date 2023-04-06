@@ -205,7 +205,7 @@ if __name__ == "__main__":
 
 
     df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
-    df = df[df['frac_of_mem_elements'].isin([.3, .7])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    # df = df[df['frac_of_mem_elements'].isin([.3, .7])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
 
     # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     for key in ['Ent', 'CE', 'Small_Ent', 'Small_CE']:
