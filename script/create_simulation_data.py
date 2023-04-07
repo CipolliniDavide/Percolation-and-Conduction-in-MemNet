@@ -93,7 +93,7 @@ if __name__ == "__main__":
     frac_of_mem_list = np.round(np.arange(.1, 1, .1, dtype=np.float16), decimals=2)
     # frac_of_mem_list = np.round([.3, .7, .9], decimals=2)
     # ratio_list = [2, 1e1, 1e2, 1e3]#, 1e4, 1e5]#, 1e6] #, 1e7, 1e8]
-    ratio_list = [1e4]
+    ratio_list = [2, 1e4, 1e6]
     # frac_list = np.round(np.arange(0, .5, .1, dtype=np.float16), decimals=2)
 
     # ratio_list = [1e3, 1e4, 1e5, 1e6]

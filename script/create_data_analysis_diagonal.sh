@@ -6,15 +6,15 @@ diag=1
 
 # For good OC
 w_init='good_OC'
-svp='OutputDiagAdiabatic_GoodOC'
+svp='DiagAdiabatic_goodOC'
 
 # For Poor OC
 #w_init='None'
-#svp='OutputDiagAdiabatic_PoorOC'
+#svp='DiagAdiabatic_poorOC'
 
 
-b_start=0
-b_end=20
+b_start=20
+b_end=25
 
 
 for V in  10 20 30 40 50 60 70 80 90 100 110 120 130 140 150

@@ -6,11 +6,11 @@ diag=0
 
 # For good OC
 w_init='good_OC'
-svp='OutputGridAdiabatic_GoodOC'
+svp='GridAdiabatic_goodOC'
 
 # For Poor OC
 #w_init='None'
-#svp='OutputGridAdiabatic'
+#svp='GridAdiabatic_poorOC'
 
 
 b_start=0

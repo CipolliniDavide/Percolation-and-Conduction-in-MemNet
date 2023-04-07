@@ -54,6 +54,8 @@ if __name__ == "__main__":
     parser.add_argument('-b_end', '--batch_end', default=20, type=int)
     parser.add_argument('-Vb', '--Vbias', default=10, type=float)
     parser.add_argument('-diag', '--random_diagonals', default=0, type=int)
+    parser.add_argument('-src', '--source_el', default=18, type=int)
+    parser.add_argument('-gnd', '--ground_el', default=425, type=int)
     # parser.add_argument('-ent_f', '--entropy_func', default='SpecExpEnt', type=str, help='VNGE_FINGER')
     args = parser.parse_args()
 
@@ -72,8 +74,8 @@ if __name__ == "__main__":
     cols = args.linear_size
     # src = [(rows - 1)//2]  # ,30] #[node_map(3, 1, rows, cols), 10] # define a list of source nodes in the range [0, rows*cols-1]
     # gnd = [rows**2 - (rows - 1) // 2 - 1]  # [20, 0]#409] # define a list of ground nodes in the range [0, rows*cols-1]
-    src = [18]  # ,30] #[node_map(3, 1, rows, cols), 10] # define a list of source nodes in the range [0, rows*cols-1]
-    gnd = [425]  # [20, 0]#409] # define a list of ground nodes in the range [0, rows*cols-1]
+    src = [args.source_el]  # ,30] #[node_map(3, 1, rows, cols), 10] # define a list of source nodes in the range [0, rows*cols-1]
+    gnd = [args.ground_el]  # [20, 0]#409] # define a list of ground nodes in the range [0, rows*cols-1]
 
     # Input signal class
     sim_param.T = .5
