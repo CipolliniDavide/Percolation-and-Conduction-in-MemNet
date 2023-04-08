@@ -101,17 +101,16 @@ if __name__ == "__main__":
     print('Starting simulations...\n\n')
     # frac_of_mem_list = np.round([1], decimals=2) #np.round(np.arange(.1, 1.1, .1, dtype=np.float16), decimals=2)
     frac_of_mem_list = np.round(np.arange(.1, 1, .1, dtype=np.float16), decimals=2)
-    # frac_of_mem_list = np.round([.3, .7, .9], decimals=2)
-    # ratio_list = [2, 1e1, 1e2, 1e3]#, 1e4, 1e5]#, 1e6] #, 1e7, 1e8]
     ratio_list = [2, 1e6]
-    # frac_list = np.round(np.arange(0, .5, .1, dtype=np.float16), decimals=2)
-
-    # ratio_list = [1e3, 1e4, 1e5, 1e6]
-    # frac_of_mem_list = np.round(np.arange(.5, 1, .1, dtype=np.float16), decimals=2)
 
     l = [edict({'ratio': r, 'frac': f, 'batch': b}) for b in range(args.batch_start, args.batch_end)
          for f in (1-frac_of_mem_list) for r in ratio_list]
-    for r in ratio_list: l.append(edict({'ratio': r, 'frac': 0, 'batch': 0}))
+    for r in ratio_list:
+        if args.random_diagonals==1:
+            for b in range(args.batch_start, args.batch_end):
+                l.append(edict({'ratio': r, 'frac': 0, 'batch': b}))
+        else:
+            l.append(edict({'ratio': r, 'frac': 0, 'batch': 0}))
 
     for item in tqdm(l):
         save_evolution(input_signal=inputsignal, rows=rows, cols=cols, dictionary=item, save_fold=save_path_sim)
