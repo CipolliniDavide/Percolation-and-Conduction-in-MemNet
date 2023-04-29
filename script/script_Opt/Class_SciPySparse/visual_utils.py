@@ -248,7 +248,10 @@ def set_ticks_label(ax, ax_type, data, num=5, valfmt="{x:.2f}", ticks=None, only
         if tick_lab is None:
             tick_lab = [valfmt(i) for i in ticks]
         else:
-            tick_lab = [valfmt(i) for i in tick_lab]
+            if type(tick_lab[0]) is str:
+                pass
+            else:
+                tick_lab = [valfmt(i) for i in tick_lab]
 
     if ax_type == 'x':
         ax.set_xticks(ticks)

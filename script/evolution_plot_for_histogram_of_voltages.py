@@ -49,19 +49,21 @@ def plot_evol_adiab(rows, cols, dictionary, save_fold, plot_second_row='ent'):
     inputsignal.V_list[0] = [dictionary.Vbias] * len(inputsignal.t_list)
     inputsignal.V_list[0][:2] = .1
 
-    # edge_voltage_list = []
-    # V_rec = []
-    # Gnw_rec = []
-    # net_entropy = []
-    # eq_G = []
-    # eq_V = []
-    # Vbias = 0
-    # deltaV = .2
-    #
+    edge_voltage_list = []
+    V_rec = []
+    Gnw_rec = []
+    net_entropy = []
+    eq_G = []
+    eq_V = []
+    Vbias = .1
+    deltaV = .1
+
     # net = MemNet(mem_param=mem_p_loc, net_param=net_param_loc, gnd=gnd, src=src, diag=args.diagonals)
     # coordinates = [(node, (feat['coord'])) for node, feat in net.G.nodes(data=True)]
-    # _ = net.MVNA(groundnode_list=gnd, sourcenode_list=src, V_list=np.reshape([.1], (1, 1)), t=0)
+    # _ = net.MVNA(groundnode_list=gnd, sourcenode_list=src, V_list=np.reshape([Vbias], (1, 1)), t=0)
     # edge_voltage_list.append(deepcopy(net.dVmat.data))
+    # eq_V.append(Vbias)
+    # eq_G.append(- net.source_current[0] / Vbias)
     #
     # while Vbias <= args.Vbias:
     #     flag = 0
@@ -82,17 +84,18 @@ def plot_evol_adiab(rows, cols, dictionary, save_fold, plot_second_row='ent'):
     #             flag = 1
     #         else:
     #             Gnw_prev = Gnw_rec[-1]
-
+    #
     # np.save(arr=edge_voltage_list, file=save_path + 'all_edges.npy')
     # np.save(arr=eq_V, file=save_path + 'eq_V.npy')
     # np.save(arr=eq_G, file=save_path + 'eq_G.npy')
 
     ######################################################################################
-    edge_voltage_list = np.load(save_path + 'all_edges.npy')[:-1]
-    eq_V= np.load(save_path + 'eq_V.npy')[:-1]
-    applied_V = np.arange(0, 20.2, eq_V[0])  # [0]+list(np.unique(V_rec))
-    applied_V[0] = .1
-    eq_G = np.load(save_path + 'eq_G.npy')[:-1]
+    edge_voltage_list = np.load(save_path + 'all_edges.npy')
+    eq_V= np.load(save_path + 'eq_V.npy')
+    applied_V = eq_V
+    # applied_V = np.arange(0, 20, eq_V[0])  # [0]+list(np.unique(V_rec))
+    # applied_V[0] = .1
+    eq_G = np.load(save_path + 'eq_G.npy')
 
     edge_voltage_list = np.abs(edge_voltage_list)
     ######################################## Hist edge DeltaV  ################################################
@@ -272,7 +275,7 @@ def plot_evol_adiab(rows, cols, dictionary, save_fold, plot_second_row='ent'):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-svp', '--save_path', #default='OutputGridAdiabatic_GoodOC', type=str)
-                        default='OutputGridAdiabaticPlot_kpkd', type=str)
+                        default='OutputGridAdiabaticPlot_kpkd/deltaV.1', type=str)
     parser.add_argument('-Vb', '--Vbias',  # default='OutputGridAdiabatic_GoodOC', type=str)
                         default=20, type=str)
     parser.add_argument('-diag', '--diagonals', default=0, type=int)
