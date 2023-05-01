@@ -59,9 +59,20 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
     ymax = 0
     ymin = 1e8
     # ymin_max = None
-    fig = plt.figure('', figsize=figsize)
-    ax = fig.subplots(nrows=1, ncols=1)
-    for i, r in enumerate(legend_loop):
+    figsize=(18, 24)
+    fig = plt.figure(figsize=figsize)
+    gs = fig.add_gridspec(ncols=2, nrows=10)
+    ax1 = fig.add_subplot(gs[1:3, 0])
+    ax2 = fig.add_subplot(gs[4:6, 0])
+    ax3 = fig.add_subplot(gs[8:9, 0])
+    ax4 = fig.add_subplot(gs[0:2, 1])
+    ax5 = fig.add_subplot(gs[3:5, 1])
+    ax6 = fig.add_subplot(gs[6:8, 1])
+    ax7 = fig.add_subplot(gs[8:10, 1])
+    axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7]
+    # fig = plt.figure('', figsize=figsize)
+    # ax = fig.subplots(nrows=1, ncols=1)
+    for i, (r, ax) in enumerate(zip(legend_loop, axes)):
     # for i, r in enumerate([.7]):
     #     print(r)
         # if i % 2 ==0:
@@ -103,45 +114,47 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
         # linestyle = {"linestyle": "--", "linewidth": 4, "markeredgewidth": 5, "elinewidth": 5, "capsize": 10}
         # ax.errorbar(frac_of_mem_el, y_mean, yerr=e, label='{:.0e}'.format(r), color=cmap(norm(r)))
 
-    a=0
-    if (ymin_max is None) or (ymin_max[1] > ymax):
-        ymin_max = [ymin, ymax]
-    if log_scale == True:
-        fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-        fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        # add_ticks = add_yticks
-        # data = [math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
-        # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
-        # ax.set_yticks(ticks)
-        # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
-        ax.set_ylabel(ylabel, fontdict=fontdict_label)
-        labels = ax.get_xticklabels() + ax.get_yticklabels()
-        [label.set_fontweight('bold') for label in labels]
+        a=0
+        if (ymin_max is None) or (ymin_max[1] > ymax):
+            ymin_max = [ymin, ymax]
+        if log_scale == True:
+            fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
+            fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+            # add_ticks = add_yticks
+            # data = [math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
+            # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
+            # ax.set_yticks(ticks)
+            # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
+            ax.set_ylabel(ylabel, fontdict=fontdict_label)
+            labels = ax.get_xticklabels() + ax.get_yticklabels()
+            [label.set_fontweight('bold') for label in labels]
 
-        # set_ticks_label(ax=ax, ax_type='y',
-        #                 num=4,
-        #                 # data=np.reshape([max_list, min_list], -1),
-        #                 data=[ math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
-        #                 ticks=ticks,
-        #                 ax_label=ylabel,
-        #                 # valfmt=valfmt,
-        #                 fontdict_ticks_label={'size': 'large'},
-        #                 fontdict_label={'color': 'black'},
-        #                 scale='log')
-    else:
-        set_ticks_label(ax=ax, ax_label=ylabel,
-                        data=np.array(ymin_max),
-                        valfmt="{x:.5f}",
-                        add_ticks=add_yticks,
-                        ax_type='y', num=3,
+            # set_ticks_label(ax=ax, ax_type='y',
+            #                 num=4,
+            #                 # data=np.reshape([max_list, min_list], -1),
+            #                 data=[ math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
+            #                 ticks=ticks,
+            #                 ax_label=ylabel,
+            #                 # valfmt=valfmt,
+            #                 fontdict_ticks_label={'size': 'large'},
+            #                 fontdict_label={'color': 'black'},
+            #                 scale='log')
+        else:
+            set_ticks_label(ax=ax, ax_label=ylabel,
+                            data=np.array(ymin_max),
+                            valfmt="{x:.5f}",
+                            add_ticks=add_yticks,
+                            ax_type='y', num=3,
+                            )
+        if ymin_max is not None:
+            plt.ylim((ymin_max[0], ymin_max[1]))
+        set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
+                        # ticks=np.unique(np.round(x_loop, decimals=2)))
                         )
-    if ymin_max is not None:
-        plt.ylim((ymin_max[0], ymin_max[1]))
-    set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
-                    # ticks=np.unique(np.round(x_loop, decimals=2)))
-                    )
-    set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc)
+        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc)
     plt.tight_layout()
+    plt.show()
+
     if log_scale==True:
         plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
     else:
@@ -230,12 +243,6 @@ if __name__ == "__main__":
     df['frac_of_static_elements'] = np.round(df['frac_of_static_elements'], decimals=2)
     df['frac_of_mem_elements'] = df.apply(lambda row: np.round(1-row.frac_of_static_elements, decimals=2), axis=1)
 
-    df['shortest_path_weighted'] = df.apply(lambda row: row.shortest_path_weighted / row.ratio, axis=1)
-    df['G_wtap'] = df.apply(lambda row: row.cols * row.G / (row.g_min*row.ratio), axis=1)
-    # df['G_star_diff'] = df.apply(lambda row: row.G - (cols/row.g_min*row.ratio), axis=1)
-    df['G_star_star'] = df.apply(lambda row: row.cols * row.G / (row.g_min * row.ratio), axis=1)
-    df['G_star_Ventra'] = df.apply(lambda row: (row.G - row.g_min) / (row.g_max/row.g_min), axis=1)
-
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures/Vbias' + save_path_ds.split('Vbias')[1]
     df = df.loc[df['batch'] < 100]
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm_AbovePerc/'
@@ -244,161 +251,21 @@ if __name__ == "__main__":
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures/'
     utils.ensure_dir(save_path_figures)
 
-
+    df = df[df['Vbias'].isin([8])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
-    df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e5])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     df = df[df['frac_of_mem_elements'].isin([.5, .6])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['frac_of_mem_elements'].isin([.1, .2, .3, .4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['frac_of_mem_elements'].isin([.5, .6, .7, .8, .9, 1])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
 
-    ### Ratio fixed
-    save_path_figures_PLeg = save_path_figures + 'Ratio_fixed/'
-    # save_path_figures_G_wtap = save_path_figures_PLeg + 'shortest_path_weighted/'
-    # utils.ensure_dir(save_path_figures_G_wtap)
 
-    # for r in np.round(np.sort(np.unique(np.array(df['ratio'])))):
-    #     plot_ent_vs_fracMem(df=df[df['ratio'].isin([r])], # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
-    #                         key_y='shortest_path_weighted',
-    #                         key_x='Vbias',
-    #                         key_legend='frac_of_mem_elements',
-    #                         ylabel='Shortest W. Path',
-    #                         save_path=save_path_figures_G_wtap,
-    #                         normalize=False,
-    #                         xlabel='V [a.u.]\nVoltage input',
-    #                         legendlabel='Memristor density\np',
-    #                         legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-    #                         x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-    #                         name_fig='{:.0e}'.format(r),
-    #                         error='std')
-    #
-    #
-    # for r in np.round(np.sort(np.unique(np.array(df['ratio'])))):
-    #     plot_ent_vs_fracMem(df=df[df['ratio'].isin([r])], # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
-    #                         key_y='G_wtap',
-    #                         key_x='Vbias',
-    #                         key_legend='frac_of_mem_elements',
-    #                         ylabel='Conductance\n'+r'$\mathbf{G_{nw}^{WTAP}}$',
-    #                         save_path=save_path_figures_G_wtap,
-    #                         normalize=False,
-    #                         xlabel='V [a.u.]\nVoltage input',
-    #                         legendlabel='Memristor density\np',
-    #                         legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-    #                         x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-    #                         name_fig='{:.0e}'.format(r),
-    #                         error='std')
-
-    # for name_fold, norm, ymin_max, ylab, key in zip(['G/', 'G_norm/', 'SPW_norm/'],
-    #                                                 [False, True, True],
-    #                                                 [[0, .02], None, None],
-    #                                                 ['Conductance\n'+r'$\mathbf{G_{nw}}$', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$', 'SPW'],
-    #                                                 ['G', 'G', 'shortest_path_weighted'],
-    #                                                 ):
-
-    ##################### To obtain S7 #####################################
-    for name_fold, norm, log_scale, ymin_max, ylab, key in zip(['G/','G_norm/'],
-                                                    [False, True],
-                                                    [False, False],
-                                                    [None, None],
-                                                    [r'$\mathbf{G_{nw}}$'+'[a.u.]', r'$\mathbf{G_{nw}^{norm}}$'],
-                                                    ['G','G'],
-                                                    ):
-
-        save_path_figures_G_norm = save_path_figures_PLeg + name_fold
-        utils.ensure_dir(save_path_figures_G_norm)
-        for rat in np.round(np.sort(np.unique(np.array(df['ratio'])))):
-            print(rat)
-            plot_ent_vs_fracMem(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
-                                log_scale=log_scale,
-                                key_y=key,
-                                key_x='Vbias',
-                                key_legend='frac_of_mem_elements',
-                                ylabel=ylab,
-                                ymin_max=ymin_max,
-                                save_path=save_path_figures_G_norm,
-                                normalize=norm,
-                                xlabel='V [a.u.]\nVoltage input',
-                                legendlabel='Memristor density\np',
-                                legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-                                x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-                                name_fig='{:.0e}'.format(rat),
-                                error='std')
-    a=0
-
-    # ############################ P fixed ####################################################
-    save_path_figures_RatioLeg = save_path_figures + 'P_fixed/'
-    # save_path_figures_G_star = save_path_figures_RatioLeg + 'G_norm_wtap/'
-    # utils.ensure_dir(save_path_figures_G_star)
-    #
-    # for f in np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2):
-    #     plot_ent_vs_fracMem(df=df[df['frac_of_mem_elements'].isin([f])],
-    #                         key_y='G_wtap',
-    #                         # normalize=True,
-    #                         normalize=False,
-    #                         key_x='Vbias',
-    #                         key_legend='ratio',
-    #                         ylabel='Conductance\n'+r'$\mathbf{G_{nw}^{WTAP}}$',
-    #                         save_path=save_path_figures_G_star,
-    #                         xlabel='V [a.u.]\nVoltage input',
-    #                         legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
-    #                         # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-    #                         # ratio=np.sort(df['ratio'].unique()),
-    #                         legend_loop=np.sort(np.unique(np.array(df['ratio']))),
-    #                         x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-    #                         name_fig='{:.2f}'.format(f),
-    #                         error='std')
-
-    #
-    # Plot (pure) conductance
-    for name_fold, norm, ymin_max, ylab in zip(['G/', 'G_norm/'],
-                                         [False, True],
-                                         [[0, .005], None],
-                                         ['Conductance\n'+r'$\mathbf{G_{nw}}$', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
-        save_path_figures_G_norm = save_path_figures_RatioLeg + name_fold
-        utils.ensure_dir(save_path_figures_G_norm)
-        for f in np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2):
-        # for f in [1]:
-            # df = df[df['ratio'].isin([1e4])]
-            plot_ent_vs_fracMem(df=df[df['frac_of_mem_elements'].isin([f])],
-                                key_y='G',
-                                normalize=norm,
-                                key_x='Vbias',
-                                key_legend='ratio',
-                                ylabel=ylab,
-                                save_path=save_path_figures_G_norm,
-                                xlabel='V [a.u.]\nVoltage input',
-                                legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
-                                ymin_max=ymin_max,
-                                # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-                                # ratio=np.sort(df['ratio'].unique()),
-                                legend_loop=np.round(np.sort(np.unique(np.array(df['ratio']))), decimals=2),
-                                x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-                                name_fig='{:.2f}'.format(f),
-                                error='std')
-    a=0
-    #
     # ########################### Fixed Voltage #########################
     save_path_figures_vbias = save_path_figures + 'Vbias_fixed/'
 
     save_path_figures_vbias_wtap = save_path_figures_vbias + 'G_norm_wtap/'
     utils.ensure_dir(save_path_figures_vbias_wtap)
     for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
-        plot_ent_vs_fracMem(df=df[df['Vbias'].isin([v])],
-                            key_y='G_wtap',
-                            # normalize=True,
-                            normalize=False,
-                            key_x='frac_of_mem_elements',
-                            key_legend='ratio',
-                            ylabel='Conductance\n'+r'$\mathbf{G_{nw}^{WTAP}}$',
-                            save_path=save_path_figures_vbias_wtap,
-                            xlabel='p\nMemristor density',
-                            legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
-                            # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-                            # ratio=np.sort(df['ratio'].unique()),
-                            legend_loop=np.sort(np.unique(np.array(df['ratio']))),
-                            x_loop=np.sort(np.unique(np.array(df['frac_of_mem_elements']))),
-                            name_fig='Vbias{:.2f}'.format(v),
-                            error='std')
 
         # Plot (pure) conductance
         for name_fold, norm, ymin_max, ylab in zip(['G/', 'G_norm/'],

@@ -33,6 +33,8 @@ from scipy.linalg import eigvals, eigh
 from easydict import EasyDict as edict
 import itertools
 
+label_gmax_gmin = r'$\mathbf{G_{max}/G_{min}}$'
+
 def take_2nd_derivative(x, y):
     dy = np.diff(y, 1)
     dx = np.diff(x, 1)
@@ -49,7 +51,7 @@ def take_1rst_derivative(x, y):
     dx = np.diff(x, 1)
     yfirst = dy / dx
     xfirst = 0.5 * (x[:-1] + x[1:])
-    return yfirst
+    return yfirst, xfirst
 
 def run(net, groundnode_list, sourcenode_list, delta_t, dictionary, save_path=None):
     # delta_t = t_list[1] - t_list[0]
@@ -336,6 +338,7 @@ if __name__ == "__main__":
     ratio_lab = ['2', '10', '100', r'$1x10^3$', r'$1x10^4$', r'$1x10^5$', r'$1x10^6$']
 
     r_l = np.zeros(len(ratio_list))
+    Gnw_list = []
     dGdV_list = []
     dEdV_list = []
     for key, ylabel, valfmt, name_, norm in zip(['Gnw_rec.npy', 'net_entropy.npy'],
@@ -375,12 +378,16 @@ if __name__ == "__main__":
 
             r_l[ind_for_loop] = item.ratio
             if 'Gnw' in name_:
+                Gnw_list.append(y_data)
                 ax.semilogy(v_eq, y_data, marker=".", markersize=3.8, linewidth=2.3,
                         # label='{:.0e}'.format(item.ratio)
                         label = '{:s}'.format(ratio_lab[ratio_list.index(item.ratio)])
 
                 )
-                dGdV_list.append( take_1rst_derivative(x=v_eq, y=y_data))
+                dgdv, xfirst= take_1rst_derivative(x=v_eq, y=y_data)
+                dGdV_list.append(dgdv)
+                print(item.ratio,': ', xfirst[dgdv == np.max(dgdv)])
+
 
             else:
                 ax.plot(v_eq, y_data, marker=".", markersize=3.8, linewidth=2.3,
@@ -388,7 +395,7 @@ if __name__ == "__main__":
                         label='{:s}'.format(ratio_lab[ratio_list.index(item.ratio)])
                         )
                 # dEdV_list.append( take_2nd_derivative(x=v_eq, y=y_data)[0] )
-                dEdV_list.append(take_1rst_derivative(x=v_eq, y=y_data))
+                dEdV_list.append(take_1rst_derivative(x=v_eq, y=y_data)[0])
 
             ind_for_loop = ind_for_loop +1
         if 'Gnw' in name_:
@@ -416,12 +423,47 @@ if __name__ == "__main__":
                         fontdict_ticks_label={'size': 'large'},
                         fontdict_label={'color': 'black'})
         # ax.set_title('p={:.2f}'.format(item.frac_mem_el), fontweight='bold', fontsize='x-large', family='Courier')
-        set_legend(ax=ax, title='Interaction strength\n'+ r'$\mathbf{G_{max}/G_{min}}$')
+        set_legend(ax=ax, title='Interaction strength\n' + label_gmax_gmin)
         plt.tight_layout()
         plt.savefig(save_path_figures + '{:s}_vs_Voltage.svg'.format(name_), format='svg', dpi=1200)
 
 
-##################################################################################################
+    ####################################################################################################################
+    # Plot single Gnw and dGdv
+    # activate latex text rendering
+    # from matplotlib import rc, rcParams
+    # rc('text', usetex=True)
+    # rc('axes', linewidth=2)
+    # rc('font', weight='bold')
+    # rcParams['text.latex.preamble'] = [r'\usepackage{sfmath} \boldmath']
+    #
+    for gnw, r in zip(Gnw_list, r_l):
+        dgdv, xfirst = take_1rst_derivative(x=v_eq, y=gnw)
+        fig2, [axbis1, axbis2] = plt.subplots(nrows=2, ncols=1, figsize=(8, 6), sharex=True)
+        axbis1.plot(v_eq, gnw, marker=".", markersize=3.8, linewidth=2.3,
+                    label='{:s}'.format(ratio_lab[ratio_list.index(r)]))
+        axbis2.plot(xfirst, dgdv, marker=".", markersize=3.8, linewidth=2.3,
+                    label='{:s}'.format(ratio_lab[ratio_list.index(r)]))
+        axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red')
+        axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red')
+        set_legend(ax=axbis1, title=label_gmax_gmin)
+        set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
+                        add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size':'large'})
+        # set_ticks_label(ax=axbis1, ax_type='y', data=gnw, num=3, valfmt="{x:.2f}", ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
+        # set_ticks_label(ax=axbis2, ax_type='y', data=dgdv, num=3, valfmt="{x:.2f}", ax_label=r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]')
+        fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
+        fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+        axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
+        axbis2.set_ylabel(r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]', fontdict=fontdict_label)
+        labels = axbis1.get_xticklabels() + axbis1.get_yticklabels()
+        [label.set_fontweight('bold') for label in labels]
+        labels = axbis2.get_xticklabels() + axbis2.get_yticklabels()
+        [label.set_fontweight('bold') for label in labels]
+        plt.tight_layout()
+        plt.savefig(save_path_figures + 'dgdv_vs_Voltage_{:.0e}.svg'.format(r), format='svg', dpi=1200)
+        plt.close(fig2)
+
+    #############################    Plot first derivative     #####################################################################
     save_path_figures = join(root,
                              '{:s}/L{:d}_newNorm/Figures/p{:.2f}/'.format(args.save_path, args.linear_size, frac_of_mem_list[0]))
     utils.ensure_dir(save_path_figures)
@@ -455,17 +497,17 @@ if __name__ == "__main__":
                     fontdict_label={'color': 'black'})
     # ax.set_title('p={:.2f}'.format(item.frac_mem_el), fontweight='bold', fontsize='x-large', family='Courier')
     plt.tight_layout()
-    set_legend(ax=ax, title='Interaction strength\n' + r'$\mathbf{G_{max}/G_{min}}$', loc=4)
+    set_legend(ax=ax, title='Interaction strength\n' + label_gmax_gmin, loc=4)
     plt.savefig(save_path_figures + '{:s}_vs_Voltage.svg'.format('dGdV'), format='svg', dpi=1200)
     plt.show()
 
-    #######################################################################################
+    ###################################       ####################################################
     ## Plot voltage for maximum derivative of G
     v_for_maxdGdV=np.zeros(len(r_l))
     for i, dGdv in enumerate(dGdV_list):
         x = 0.5 * (v_eq[:-1] + v_eq[1:])
         index_to_plot = dGdv > 1e-11
-        max_ind = np.max(dGdv[index_to_plot])
+        # max_ind = np.max(dGdv[index_to_plot])
         v_for_maxdGdV[i] = x[dGdv==np.max(dGdv[index_to_plot])][0]
         # x = v_eq[1:][index_to_plot]
         # x = x[index_to_plot]
@@ -483,7 +525,7 @@ if __name__ == "__main__":
                     ticks=np.arange(len(r_l)),
                     # tick_lab=['2', '10', '100', '1x10^3', '1x10^4', '1x10^5', '1x10^6'],
                     tick_lab= ratio_lab_bold,
-                    ax_label='Interaction strength\n', # r'$\mathbf{G_{max}/G_{min}}$',
+                    ax_label='Interaction strength\n', # label_gmax_gmin,
                     # valfmt="{x:.1f}",
                     fontdict_ticks_label={'size': 'large'},
                     fontdict_label={'color': 'black'})
@@ -520,7 +562,7 @@ if __name__ == "__main__":
                     fontdict_ticks_label={'size': 'large'},
                     fontdict_label={'color': 'black'})
     # ax.set_title('p={:.2f}'.format(item.frac_mem_el), fontweight='bold', fontsize='x-large', family='Courier')
-    set_legend(ax=ax, title='Interaction strength\n' + r'$\mathbf{G_{max}/G_{min}}$')
+    set_legend(ax=ax, title='Interaction strength\n' + label_gmax_gmin)
     plt.tight_layout()
     plt.savefig(save_path_figures + '{:s}_vs_Voltage.svg'.format('dEdV'), format='svg', dpi=1200)
     plt.show()
