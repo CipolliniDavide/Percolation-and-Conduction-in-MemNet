@@ -109,7 +109,7 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
         else:
             set_ticks_label(ax=ax, ax_label=ylabel,
                             data=y_mean,
-                            valfmt="{x:.5f}",
+                            valfmt="{x:.2e}",
                             add_ticks=add_yticks,
                             ax_type='y', num=3,
                             )
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     utils.ensure_dir(save_path_figures)
 
-    df = df[df['Vbias'].isin([2.5])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    df = df[df['Vbias'].isin([8])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e5])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
