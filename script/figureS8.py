@@ -221,7 +221,7 @@ if __name__ == "__main__":
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     utils.ensure_dir(save_path_figures)
 
-    df = df[df['Vbias'].isin([8])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    df = df[df['Vbias'].isin([2.5])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e5])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
@@ -236,9 +236,10 @@ if __name__ == "__main__":
     for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
 
         # Plot (pure) conductance
-        for name_fold, norm, ymin_max, ylab in zip(['G/', 'G_norm/'],
-                                                   [False, True],
-                                                   [[0, .005], None],
+        for name_fold, norm, log_scale, ymin_max, ylab in zip(['G/', 'G_norm/'],
+                                                         [False, True], # norm
+                                                        [True, False], #logscale
+                                                   [None, None],
                                                    ['Conductance\n'+r'$\mathbf{G_{nw}}$', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
             save_path_figures_G_norm = save_path_figures_vbias + name_fold
             utils.ensure_dir(save_path_figures_G_norm)
@@ -246,6 +247,7 @@ if __name__ == "__main__":
                 plot_ent_vs_fracMem(df=df[df['Vbias'].isin([v])],
                                     key_y='G',
                                     normalize=norm,
+                                    log_scale=log_scale,
                                     key_x='frac_of_mem_elements',
                                     key_legend='ratio',
                                     ylabel=ylab,
