@@ -85,7 +85,7 @@ def plot_S6():
     ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b',
               '#e377c2']  # , '#7f7f7f', '#bcbd22', '#17becf']
-    for gnw, r, [axbis1, axbis2], c in zip(Gnw_list, r_l, axes, colors):
+    for i, (gnw, r, [axbis1, axbis2], c) in enumerate(zip(Gnw_list, r_l, axes, colors)):
         dgdv, xfirst = take_1rst_derivative(x=v_eq, y=gnw)
         # fig2, [axbis1, axbis2] = plt.subplots(nrows=2, ncols=1, figsize=(8, 6), sharex=True)
         # axbis1, axbis2 = ax
@@ -93,16 +93,24 @@ def plot_S6():
                     label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
         axbis2.plot(xfirst, dgdv, marker=".", markersize=3.8, linewidth=5,
                     label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
-        axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red')
-        axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red')
-        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
+        axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
+        axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
+
+        # if (i==2) or (i==6):
+        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='',#'V [a.u.]\nVoltage input',
                         add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
         set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
                         add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
-        set_ticks_label(ax=axbis1, ax_type='y', data=gnw, num=3, valfmt="{x:.2e}",
-                        ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
-        set_ticks_label(ax=axbis2, ax_type='y', data=dgdv, num=3, valfmt="{x:.2e}",
-                        ax_label=r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]')
+        # else:
+        #     set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
+        #                     add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
+        #     set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='',
+        #                     # 'V [a.u.]\nVoltage input',
+        #                     add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
+        # set_ticks_label(ax=axbis1, ax_type='y', data=gnw, num=3, valfmt="{x:.2e}",
+        #                 ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
+        # set_ticks_label(ax=axbis2, ax_type='y', data=dgdv, num=3, valfmt="{x:.2e}",
+        #                 ax_label=r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]')
         fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
         fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
         axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
@@ -157,51 +165,59 @@ def plot_S6_entropy(v_eq, ent_list):
         dedv, xsecond = take_2nd_derivative(x=v_eq, y=ent)
         # v_to_compute_elbow = np.max(xfirst[dedv<0])
         # indexes_to_compute_first_elbow = v_eq < xsecond[np.where(np.diff(np.sign(dedv)))[0][0]]
-        indexes_to_compute_second_elbow = v_eq < np.max(xsecond[dedv<0])
-        indexes_to_compute_elbow = indexes_to_compute_second_elbow
-        # fig2, [axbis1, axbis2] = plt.subplots(nrows=2, ncols=1, figsize=(8, 6), sharex=True)
-        # axbis1, axbis2 = ax
+        # indexes_to_compute_second_elbow = v_eq < np.max(xsecond[dedv<0])
+        # indexes_to_compute_elbow = indexes_to_compute_second_elbow
+
         if i ==0:
             axbis1.plot(v_eq, g, marker=".", markersize=3.8, linewidth=5,
                             label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
         else:
             axbis1.semilogy(v_eq, g, marker=".", markersize=3.8, linewidth=5,
                     label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
-        # axbis2.plot(xfirst, dgdv, marker=".", markersize=3.8, linewidth=5,
-        #             label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
         # print(r, indexes_to_compute_first_elbow)
-        kn_ent = KneeLocator(v_eq[indexes_to_compute_elbow], ent[indexes_to_compute_elbow],
-                             curve='concave', direction='decreasing').knee
-        kn_g = KneeLocator(v_eq[indexes_to_compute_elbow], g[indexes_to_compute_elbow],
-                             curve='convex', direction='increasing').knee
+        # kn_ent = KneeLocator(v_eq[indexes_to_compute_elbow], ent[indexes_to_compute_elbow],
+        #                      curve='concave', direction='decreasing').knee
+        # kn_g = KneeLocator(v_eq[indexes_to_compute_elbow], g[indexes_to_compute_elbow],
+        #                      curve='convex', direction='increasing').knee
         axbis2.plot(v_eq, ent, marker=".", markersize=3.8, linewidth=5,
                     label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
-        axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='green')
-        axbis1.axvline(x=kn_ent, ls='--', color='purple')
-        axbis2.axvline(x=kn_ent, ls='--', color='purple')
-        # axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red')
+        # axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='green')
+        # axbis1.axvline(x=kn_ent, ls='--', color='purple')
+        # axbis2.axvline(x=kn_ent, ls='--', color='purple')
+        axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
+        # axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
         # axbis1.axvline(x=xfirst[np.where(np.diff(np.sign(dgdv)))[0][0]], color='green')
         # axbis2.axvline(x=xfirst[np.where(np.diff(np.sign(dgdv)))[0][0]], color='red')
-        axbis1.axvline(x=v_eq[list(ent).index(np.min(ent))], color='red')
-        axbis2.axvline(x=v_eq[list(ent).index(np.min(ent))], color='red')
-        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
-                        add_ticks=[v_eq[list(ent).index(np.min(ent))]], num=2, fontdict_ticks_label={'size': 'large'})
+        # axbis1.axvline(x=v_eq[list(ent).index(np.min(ent))], color='purple', ls='--', linewidth=3)
+        axbis2.axvline(x=v_eq[list(ent).index(np.min(ent))], color='purple', ls='--', linewidth=3)
+        # if (i==2) or (i==6):
+        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
+                        add_ticks=[xfirst[dgdv == np.max(dgdv)][0]], num=2, fontdict_ticks_label={'size': 'large'})
         set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
                         add_ticks=[v_eq[list(ent).index(np.min(ent))]], num=2, fontdict_ticks_label={'size': 'large'})
-        set_ticks_label(ax=axbis2, ax_type='y', data=ent, num=3, valfmt="{x:.2f}",
-                        ax_label=r'$\mathbf{\sigma}$')
+        # else:
+        #     set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
+        #                     add_ticks=[xfirst[dgdv == np.max(dgdv)][0]], num=2, fontdict_ticks_label={'size': 'large'})
+        #     set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
+        #                 add_ticks=[v_eq[list(ent).index(np.min(ent))]], num=2, fontdict_ticks_label={'size': 'large'})
+        if i == 0:
+            set_ticks_label(ax=axbis2, ax_type='y', data=ent, num=2, valfmt="{x:.2f}", ax_label=r'$\mathbf{\sigma}$')
+        else:
+            set_ticks_label(ax=axbis2, ax_type='y', data=ent, num=3, valfmt="{x:.2f}", ax_label=r'$\mathbf{\sigma}$')
         # set_ticks_label(ax=axbis2, ax_type='y', data=dgdv, num=3, valfmt="{x:.2f}",
         #                 ax_label=r'$\mathbf{d\sigma/dV}$' + ' [a.u.]')
         # set_ticks_label(ax=axbis1, ax_type='y', data=g, num=3, valfmt="{x:.2f}",
         #                 ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
         fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
         fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        axbis2.set_ylabel(r'$\mathbf{\sigma}$', fontdict=fontdict_label)
+        # axbis2.set_ylabel(r'$\mathbf{\sigma}$', fontdict=fontdict_label)
+        # labels = axbis2.get_xticklabels() + axbis2.get_yticklabels()
+        # [label.set_fontweight('bold') for label in labels]
+        #
         axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
         labels = axbis1.get_xticklabels() + axbis1.get_yticklabels()
         [label.set_fontweight('bold') for label in labels]
-        labels = axbis2.get_xticklabels() + axbis2.get_yticklabels()
-        [label.set_fontweight('bold') for label in labels]
+
         set_legend(ax=axbis1, title=label_gmax_gmin)
     plt.tight_layout()
     plt.savefig(save_path_figures + 'G_and_ent_vs_Voltage.svg'.format(r), format='svg', dpi=1200)
