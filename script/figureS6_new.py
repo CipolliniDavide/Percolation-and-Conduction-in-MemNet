@@ -196,7 +196,7 @@ def plot_S6_entropy(v_eq, ent_list):
         #                 ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
         fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
         fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        axbis2.set_ylabel(r'$\mathbf{\sigma}$' + ' [a.u.]', fontdict=fontdict_label)
+        axbis2.set_ylabel(r'$\mathbf{\sigma}$', fontdict=fontdict_label)
         axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
         labels = axbis1.get_xticklabels() + axbis1.get_yticklabels()
         [label.set_fontweight('bold') for label in labels]
