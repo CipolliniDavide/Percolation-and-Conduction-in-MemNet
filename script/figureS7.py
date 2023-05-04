@@ -169,13 +169,6 @@ if __name__ == "__main__":
     time_list = []
     edge_list = []
     start_time = time.time()
-    # rows = cols = int(21)
-    # src = [11]  # ,30] #[node_map(3, 1, rows, cols), 10] # define a list of source nodes in the range [0, rows*cols-1]
-    # gnd = [391]  # [20, 0]#409] # define a list of ground nodes in the range [0, rows*cols-1]
-    #src = [2]
-    # gnd = [22]
-    # src = [10]  # ,30] #[node_map(3, 1, rows, cols), 10] # define a list of source nodes in the range [0, rows*cols-1]
-    # gnd = [430]  # [20, 0]#409] # define a list of ground nodes in the range [0, rows*cols-1]
 
     rows = args.linear_size
     cols = args.linear_size

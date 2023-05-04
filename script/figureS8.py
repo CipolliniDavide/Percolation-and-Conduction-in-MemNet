@@ -63,7 +63,7 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
     axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7]
     # fig = plt.figure('', figsize=figsize)
     # ax = fig.subplots(nrows=1, ncols=1)
-    ratio_lab = ['2', '10', '100', r'$1x10^3$', r'$1x10^4$', r'$1x10^5$', r'$1x10^6$']
+    ratio_lab = ['2', '10', '100', r'$1\times10^3$', r'$1\times10^4$', r'$1\times10^5$', r'$1\times10^6$']
     ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
 
     for i, (r, ax) in enumerate(zip(legend_loop, axes)):
