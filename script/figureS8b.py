@@ -65,6 +65,8 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
     # ax = fig.subplots(nrows=1, ncols=1)
     ratio_lab = ['2', '10', '100', r'$1\times10^3$', r'$1\times10^4$', r'$1\times10^5$', r'$1\times10^6$']
     ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b',
+              '#e377c2']  # '#7f7f7f',  '#bcbd22', '#17becf']
 
     for i, (r, ax) in enumerate(zip(legend_loop, axes)):
         y = [y_data.loc[(y_data[key_legend] == r) & (y_data[key_x] == fr)][key_y] for fr in x_loop]
@@ -84,17 +86,30 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
 
         if 'Memristor density' in legendlabel:
             if log_scale == True:
-                ax.semilogy(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^', )
+                ax.semilogy(x_loop, y_mean, label='{:.1f}'.format(r),
+                            color=colors[i],
+                            # color=cmap(norm(r)),
+                            marker='^')
             else:
-                ax.plot(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^',)
+                ax.plot(x_loop, y_mean, label='{:.1f}'.format(r),
+                        color=colors[i])
+                        # color=cmap(norm(r)), marker='^',)
         else:
-            if log_scale==True:
-                ax.semilogy(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]), color=cmap(norm(r)), marker='^', )
+            if (log_scale == True) and (r >= 1e3):
+                ax.semilogy(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]),
+                            color=colors[i],
+                            # color=cmap(norm(r)),
+                            marker='^', )
             else:
-                ax.plot(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]), color=cmap(norm(r)), marker='^', )
-        ax.fill_between(x_loop, y_mean - e, y_mean + e, alpha=0.2, color=cmap(norm(r)))
+                ax.plot(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]),
+                        color=colors[i],
+                        # color=cmap(norm(r)),
+                        marker='^', )
+        ax.fill_between(x_loop, y_mean - e, y_mean + e, alpha=0.2,
+                        color=colors[i])
+                        # color=cmap(norm(r)))
 
-        if log_scale == True:
+        if (log_scale == True) and (r>=1e3):
             fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
             fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
             # add_ticks = add_yticks
@@ -108,11 +123,11 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
 
         else:
             set_ticks_label(ax=ax, ax_label=ylabel,
-                            data=y_mean,
-                            valfmt="{x:.2e}",
-                            add_ticks=add_yticks,
-                            ax_type='y', num=3,
-                            )
+                                data=y_mean,
+                                valfmt="{x:.2e}",
+                                add_ticks=add_yticks,
+                                ax_type='y', num=3,
+                                )
         if (r==100) or (r==1e6):
             set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
                             # ticks=np.unique(np.round(x_loop, decimals=2)))
@@ -221,7 +236,12 @@ if __name__ == "__main__":
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     utils.ensure_dir(save_path_figures)
 
-    df = df[df['Vbias'].isin([2.5])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
+    # v=2.5
+    v=8
+    if v==8:
+        log=True
+    else: log=False
+    df = df[df['Vbias'].isin([v])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6])] #1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e4])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
     # df = df[df['ratio'].isin([1e5])]  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])]
@@ -238,9 +258,11 @@ if __name__ == "__main__":
         # Plot (pure) conductance
         for name_fold, norm, log_scale, ymin_max, ylab in zip(['G/', 'G_norm/'],
                                                          [False, True], # norm
-                                                        [True, False], #logscale
+                                                        [log, False], #logscale
                                                    [None, None],
-                                                   ['Conductance\n'+r'$\mathbf{G_{nw}}$', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
+                                                   ['Conductance\n'+r'$\mathbf{G_{nw}}$'+' [a.u.]', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
+                                                              # [r'$\mathbf{G_{nw}}$'+' [a.u.]',
+                                                              #  'Conductance\n' + r'$\mathbf{G_{nw}^{norm}}$']):
             save_path_figures_G_norm = save_path_figures_vbias + name_fold
             utils.ensure_dir(save_path_figures_G_norm)
             for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
