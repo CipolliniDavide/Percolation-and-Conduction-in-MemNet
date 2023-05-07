@@ -293,10 +293,20 @@ def plot_S6_entropy(v_eq, ent_list):
         # axbis1.axvline(x=v_eq[list(ent).index(np.min(ent))], color='purple', ls='--', linewidth=3)
         # axbis2.axvline(x=v_eq[list(ent).index(np.min(ent))], color='purple', ls='--', linewidth=3)
         # if (i==2) or (i==6):
-        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
-                        add_ticks=[xfirst[dgdv == np.max(dgdv)][0]], num=2, fontdict_ticks_label={'size': 'large'})
-        set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='V [a.u.]\nVoltage input',
-                        add_ticks=[v_eq[list(ent).index(np.min(ent))]], num=2, fontdict_ticks_label={'size': 'large'})
+        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='',  # 'V [a.u.]\nVoltage input',
+                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
+                        add_ticks=xsec[peacks],
+                        num=2, fontdict_ticks_label={'size': 'large'})
+        set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='V [a.u.]\nVoltage input',
+                        # +'\n{:s}'.format(letters[i]),
+                        add_ticks=xsec[peacks],
+                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
+                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
+                        num=2, fontdict_ticks_label={'size': 'large'})
+        # set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='', #'V [a.u.]\nVoltage input',
+        #                 add_ticks=[xfirst[dgdv == np.max(dgdv)][0]], num=2, fontdict_ticks_label={'size': 'large'})
+        # set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='V [a.u.]\nVoltage input',
+        #                 add_ticks=[v_eq[list(ent).index(np.min(ent))]], num=2, fontdict_ticks_label={'size': 'large'})
         # else:
         #     set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
         #                     add_ticks=[xfirst[dgdv == np.max(dgdv)][0]], num=2, fontdict_ticks_label={'size': 'large'})
@@ -319,6 +329,7 @@ def plot_S6_entropy(v_eq, ent_list):
         axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
         labels = axbis1.get_xticklabels() + axbis1.get_yticklabels()
         [label.set_fontweight('bold') for label in labels]
+        # [label.set_fontsize('20') for label in labels[]]
 
         set_legend(ax=axbis1, title=label_gmax_gmin)
     plt.tight_layout()
