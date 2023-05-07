@@ -34,13 +34,13 @@ def plot_axes(ax, fig=None, geometry=(1,1,1)):
     ax = fig.axes.append(ax)
     return fig
 
-def set_legend(ax, title='', ncol=1, loc=0):
+def set_legend(ax, title='', ncol=1, loc=0, fontsize="x-large", title_fontsize='xx-large'):
     import matplotlib as mpl
     myfont1 = mpl.font_manager.FontProperties(fname='/System/Library/Fonts/Supplemental/Arial Italic.ttf')
     myfont2 = mpl.font_manager.FontProperties(fname='/System/Library/Fonts/Supplemental/Arial Bold.ttf')
-    lg = ax.legend(fontsize="x-large", title=title, title_fontsize='xx-large', ncol=ncol, loc=loc)
+    lg = ax.legend(fontsize=fontsize, title=title, title_fontsize=title_fontsize, ncol=ncol, loc=loc)
     title = lg.get_title()
-    title.set_fontsize('xx-large')
+    title.set_fontsize(title_fontsize)
     title.set_weight('bold')
     # l.set_title(title=title, prop=myfont2)
 

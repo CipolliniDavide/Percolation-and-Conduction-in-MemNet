@@ -117,9 +117,9 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
             # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
             # ax.set_yticks(ticks)
             # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
-            ax.set_ylabel(ylabel, fontdict=fontdict_label)
-            labels = ax.get_xticklabels() + ax.get_yticklabels()
+            labels = ax.get_yticklabels() + ax.get_yticklabels('minor')
             [label.set_fontweight('bold') for label in labels]
+            [label.set_size('xx-large') for label in labels]
 
         else:
             set_ticks_label(ax=ax, ax_label=ylabel,
@@ -236,8 +236,8 @@ if __name__ == "__main__":
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     utils.ensure_dir(save_path_figures)
 
-    
-    v=2.5
+    # v=2.5
+    v=8
     if v==8:
         log=True
     else: log=False
