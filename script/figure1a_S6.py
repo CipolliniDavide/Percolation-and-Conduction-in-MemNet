@@ -53,43 +53,64 @@ def take_1rst_derivative(x, y):
     xfirst = 0.5 * (x[:-1] + x[1:])
     return yfirst, xfirst
 
-def plot_S6():
-    figsize = (12, 20)
-    fig = plt.figure(figsize=figsize)
-    gs = fig.add_gridspec(ncols=2, nrows=8)
-
-    ax4a = fig.add_subplot(gs[0:1, 1])
-    ax4b = fig.add_subplot(gs[1:2, 1])
-
-    ax5a = fig.add_subplot(gs[2:3, 1])
-    ax5b = fig.add_subplot(gs[3:4, 1])
-
-    ax6a = fig.add_subplot(gs[4:5, 1])
-    ax6b = fig.add_subplot(gs[5:6, 1])
-
-    ax7a = fig.add_subplot(gs[6:7, 1])
-    ax7b = fig.add_subplot(gs[7:8, 1])
+def plot_S6(hor=True):
+    if hor==False:
+        figsize = (12, 20)
+        fig = plt.figure(figsize=figsize)
+        gs = fig.add_gridspec(ncols=2, nrows=8)
+    else:
+        figsize = (20, 12)
+        fig = plt.figure(figsize=figsize)
+        gs = fig.add_gridspec(ncols=4, nrows=14)
 
     if len(Gnw_list)==8:
-        ax0a = fig.add_subplot(gs[0:1, 0])
-        ax0b = fig.add_subplot(gs[1:2, 0])
+        if hor==True:
+            axes = [[fig.add_subplot(gs[0:3, col]), fig.add_subplot(gs[3:6, col])] for col in range(4)]
+            axes = axes + [[fig.add_subplot(gs[8:11, col]), fig.add_subplot(gs[11:14, col])] for col in range(4)]
+        else:
+            ax4a = fig.add_subplot(gs[0:1, 1])
+            ax4b = fig.add_subplot(gs[1:2, 1])
 
-        ax1a = fig.add_subplot(gs[2:3, 0])
-        ax1b = fig.add_subplot(gs[3:4, 0])
+            ax5a = fig.add_subplot(gs[2:3, 1])
+            ax5b = fig.add_subplot(gs[3:4, 1])
 
-        ax2a = fig.add_subplot(gs[4:5, 0])
-        ax2b = fig.add_subplot(gs[5:6, 0])
+            ax6a = fig.add_subplot(gs[4:5, 1])
+            ax6b = fig.add_subplot(gs[5:6, 1])
 
-        ax3a = fig.add_subplot(gs[6:7, 0])
-        ax3b = fig.add_subplot(gs[7:8, 0])
-        axes = [[ax0a, ax0b], [ax1a, ax1b], [ax2a, ax2b], [ax3a, ax3b], [ax4a, ax4b], [ax5a, ax5b], [ax6a, ax6b], [ax7a, ax7b]]
+            ax7a = fig.add_subplot(gs[6:7, 1])
+            ax7b = fig.add_subplot(gs[7:8, 1])
+
+            ax0a = fig.add_subplot(gs[0:1, 0])
+            ax0b = fig.add_subplot(gs[1:2, 0])
+
+            ax1a = fig.add_subplot(gs[2:3, 0])
+            ax1b = fig.add_subplot(gs[3:4, 0])
+
+            ax2a = fig.add_subplot(gs[4:5, 0])
+            ax2b = fig.add_subplot(gs[5:6, 0])
+
+            ax3a = fig.add_subplot(gs[6:7, 0])
+            ax3b = fig.add_subplot(gs[7:8, 0])
+            axes = [[ax0a, ax0b], [ax1a, ax1b], [ax2a, ax2b], [ax3a, ax3b], [ax4a, ax4b], [ax5a, ax5b], [ax6a, ax6b], [ax7a, ax7b]]
+
         colors = ['#1f77b4', '#7f7f7f','#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b',
                   '#e377c2']  # '#7f7f7f',  '#bcbd22', '#17becf']
         ratio_lab = ['2', '4', '10', '100', r'$1\times10^3$', r'$1\times10^4$', r'$1\times10^5$', r'$1\times10^6$']
         ratio_list = [2, 4, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
 
-
     else:
+        ax4a = fig.add_subplot(gs[0:1, 1])
+        ax4b = fig.add_subplot(gs[1:2, 1])
+
+        ax5a = fig.add_subplot(gs[2:3, 1])
+        ax5b = fig.add_subplot(gs[3:4, 1])
+
+        ax6a = fig.add_subplot(gs[4:5, 1])
+        ax6b = fig.add_subplot(gs[5:6, 1])
+
+        ax7a = fig.add_subplot(gs[6:7, 1])
+        ax7b = fig.add_subplot(gs[7:8, 1])
+
         ax1a = fig.add_subplot(gs[1:2, 0])
         ax1b = fig.add_subplot(gs[2:3, 0])
 
@@ -126,7 +147,7 @@ def plot_S6():
         # axbis1, axbis2 = ax
         # ind_to_keep=dgdv>1e-10
         if (r == 2) or (r==4):
-            axbis1.plot(v_eq, gnw, marker=".", markersize=3.8, linewidth=5,
+            axbis1.semilogy(v_eq, gnw, marker=".", markersize=3.8, linewidth=5,
                         label='{:s}'.format(ratio_lab[ratio_list.index(r)]), c=c)
         else:
             axbis1.semilogy(v_eq, gnw, marker=".", markersize=3.8, linewidth=5,
@@ -140,42 +161,35 @@ def plot_S6():
         for v, col in zip(sorted(xsec[peacks])[::-1], ['red', 'black']):
             axbis1.axvline(x=v, color=col, ls='--', linewidth=3)
             axbis2.axvline(x=v, color=col, ls='--', linewidth=3)
-            # axbis1.axvline(x=xsec[dgdvdv == np.min(dgdvdv)], color=col, linewidth=3)
-            # axbis1.axvline(x=xfirst[ind], color=col, linewidth=3)
-            # axbis1.axvline(x=xfirst[ind], color=col, linewidth=3)
 
-        # axbis1.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
-        # axbis2.axvline(x=xfirst[dgdv == np.max(dgdv)], color='red', linewidth=3)
-        # if (i==2) or (i==6):
-        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='',#'V [a.u.]\nVoltage input',
-                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
-                        add_ticks=xsec[peacks],
-                        num=2, fontdict_ticks_label={'size': 'large'})
         set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='V [a.u.]\nVoltage input',#+'\n{:s}'.format(letters[i]),
                         add_ticks=xsec[peacks],
                         # add_ticks=xfirst[dgdv == np.max(dgdv)],
                         # add_ticks=xfirst[dgdv == np.max(dgdv)],
                         num=2, fontdict_ticks_label={'size': 'large'})
-        # else:
-        #     set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='', #'V [a.u.]\nVoltage input',
-        #                     add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
-        #     set_ticks_label(ax=axbis2, ax_type='x', data=v_eq, valfmt="{x:.2f}", ax_label='',
-        #                     # 'V [a.u.]\nVoltage input',
-        #                     add_ticks=xfirst[dgdv == np.max(dgdv)], num=2, fontdict_ticks_label={'size': 'large'})
-        # set_ticks_label(ax=axbis1, ax_type='y', data=gnw, num=3, valfmt="{x:.2e}",
-        #                 ax_label=r'$\mathbf{G_{nw}}$' + ' [a.u.]')
-        # set_ticks_label(ax=axbis2, ax_type='y', data=dgdv, num=3, valfmt="{x:.2e}",
-        #                 ax_label=r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]')
+        set_ticks_label(ax=axbis1, ax_type='x', data=v_eq, valfmt="{x:.1f}", ax_label='',
+                        only_ticks=True,
+                        add_ticks=xsec[peacks],
+                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
+                        # add_ticks=xfirst[dgdv == np.max(dgdv)],
+                        num=2, fontdict_ticks_label={'size': 'large'})
+
         fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-        fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
-        # axbis2.set_ylabel(r'$\mathbf{dG_{nw}/dV}$' + ' [a.u.]', fontdict=fontdict_label)
+        fontdict_label = {'weight': 'bold', 'size': 15, 'color': 'black'}
+
         fontdict_label_derivat = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        axbis2.set_ylabel(r'$\mathbf{dG^2_{nw}/dV^2}$' + '\n[a.u.]', fontdict=fontdict_label_derivat)
-        labels = axbis1.get_xticklabels() + axbis1.get_yticklabels()
+        if hor==True:
+            if (i==0) or (i==4):
+                fontdict_label_label = {'weight': 'bold', 'size': 24, 'color': 'black'}
+                axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label_label)
+                fontdict_label_derivat = {'weight': 'bold', 'size': 22, 'color': 'black'}
+                axbis2.set_ylabel(r'$\mathbf{dG^2_{nw}/dV^2}$' + '\n[a.u.]', fontdict=fontdict_label_derivat)
+        else:
+            axbis1.set_ylabel(r'$\mathbf{G_{nw}}$' + ' [a.u.]', fontdict=fontdict_label)
+            axbis2.set_ylabel(r'$\mathbf{dG^2_{nw}/dV^2}$' + '\n[a.u.]', fontdict=fontdict_label_derivat)
+        labels = axbis1.get_yticklabels() + axbis2.get_yticklabels() + axbis1.get_yticklabels('minor') + axbis2.get_yticklabels('minor')
         [label.set_fontweight('bold') for label in labels]
-        labels = axbis2.get_xticklabels() + axbis2.get_yticklabels()
-        [label.set_fontweight('bold') for label in labels]
+        [label.set_fontsize(fontdict_label['size']) for label in labels]
         set_legend(ax=axbis1, title=label_gmax_gmin)
     plt.tight_layout()
     plt.savefig(save_path_figures + 'dgdv_vs_Voltage.svg'.format(r), format='svg', dpi=1200)

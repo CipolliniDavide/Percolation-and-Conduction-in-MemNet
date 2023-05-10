@@ -35,120 +35,120 @@ from script_Opt.Class_SciPySparse.visual_utils import set_ticks_label, set_legen
 import math
 
 
-def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_legend,
-                        ylabel=None, normalize=False,
-                        xlabel='p', error='std', ymin_max=None,
-                        name_fig='', loc=2, figsize=(8, 6), add_yticks=[],
-                        legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
-                        log_scale=None,
-                        format='svg', dpi=1200):
-
-    import matplotlib as mpl
-    cmap = plt.cm.get_cmap("jet")
-    norm = mpl.colors.SymLogNorm(2, vmin=legend_loop.min(), vmax=legend_loop.max())
-    sm = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-    sm.set_array([])
-
-    # frac_stat_el = np.round(np.sort(np.unique(np.array(df['frac_of_static_elements'])))[::-1], decimals=2)
-    # frac_of_mem_el = np.round(np.sort(np.unique(np.array(df[key_x]))), decimals=2)
-
-
-    # y_data = df_grr.reset_index()
-    # err_y = df_grvar.reset_index()
-    y_data = df
-
-    ymax = 0
-    ymin = 1e8
-    # ymin_max = None
-    fig = plt.figure('', figsize=figsize)
-    ax = fig.subplots(nrows=1, ncols=1)
-    for i, r in enumerate(legend_loop):
-    # for i, r in enumerate([.7]):
-    #     print(r)
-        # if i % 2 ==0:
-        # r=.5
-        y = [y_data.loc[(y_data[key_legend] == r) & (y_data[key_x] == fr)][key_y] for fr in x_loop]
-        # normalize=True
-        if normalize:
-            max_val = np.array([np.max(a.values) for a in y]).max()
-            min_val = np.array([np.min(a.values) for a in y]).min()
-            # y_norm = [(y[i] - np.min(y))/(np.max(y)-np.min(y)) for i in range(len(y))]
-            y_norm = [(y[i].values - min_val)/(max_val-min_val) for i in range(len(y))]
-            yplot = y_norm
-        else:
-            yplot = y
-        y_mean = np.array([yplot[i].mean() for i in range(len(y))])
-        if error == 'sem':
-            e = np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
-        elif error == 'std':
-            e = np.array([yplot[i].std(ddof=1) for i in range(len(y))])
-
-        if y_mean.max() > ymax:
-            ymax = y_mean.max()
-        if y_mean.min() < ymin:
-            ymin = y_mean.min()
-
-        if 'Memristor density' in legendlabel:
-            if log_scale == True:
-                ax.semilogy(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^', )
-            else:
-                ax.plot(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^',)
-        else:
-            ratio_lab = ['2', '10', '100', r'$1x10^3$', r'$1x10^4$', r'$1x10^5$', r'$1x10^6$']
-            ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
-            if log_scale==True:
-                ax.semilogy(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]), color=cmap(norm(r)), marker='^', )
-            else:
-                ax.plot(x_loop, y_mean, label='{:.0e}'.format(r), color=cmap(norm(r)), marker='^', )
-        ax.fill_between(x_loop, y_mean - e, y_mean + e, alpha=0.2, color=cmap(norm(r)))
-        # linestyle = {"linestyle": "--", "linewidth": 4, "markeredgewidth": 5, "elinewidth": 5, "capsize": 10}
-        # ax.errorbar(frac_of_mem_el, y_mean, yerr=e, label='{:.0e}'.format(r), color=cmap(norm(r)))
-
-    a=0
-    if (ymin_max is None) or (ymin_max[1] > ymax):
-        ymin_max = [ymin, ymax]
-    if log_scale == True:
-        fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-        fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
-        # add_ticks = add_yticks
-        # data = [math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
-        # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
-        # ax.set_yticks(ticks)
-        # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
-        ax.set_ylabel(ylabel, fontdict=fontdict_label)
-        labels = ax.get_xticklabels() + ax.get_yticklabels()
-        [label.set_fontweight('bold') for label in labels]
-
-        # set_ticks_label(ax=ax, ax_type='y',
-        #                 num=4,
-        #                 # data=np.reshape([max_list, min_list], -1),
-        #                 data=[ math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
-        #                 ticks=ticks,
-        #                 ax_label=ylabel,
-        #                 # valfmt=valfmt,
-        #                 fontdict_ticks_label={'size': 'large'},
-        #                 fontdict_label={'color': 'black'},
-        #                 scale='log')
-    else:
-        set_ticks_label(ax=ax, ax_label=ylabel,
-                        data=np.array(ymin_max),
-                        valfmt="{x:.5f}",
-                        add_ticks=add_yticks,
-                        ax_type='y', num=3,
-                        )
-    if ymin_max is not None:
-        plt.ylim((ymin_max[0], ymin_max[1]))
-    set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
-                    # ticks=np.unique(np.round(x_loop, decimals=2)))
-                    )
-    set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc)
-    plt.tight_layout()
-    if log_scale==True:
-        plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
-    else:
-        plt.savefig(join(save_path + '{:s}_{:s}.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
-    plt.show()
-    plt.close('all')
+# def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_legend,
+#                         ylabel=None, normalize=False,
+#                         xlabel='p', error='std', ymin_max=None,
+#                         name_fig='', loc=2, figsize=(8, 6), add_yticks=[],
+#                         legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
+#                         log_scale=None,
+#                         format='svg', dpi=1200):
+#
+#     import matplotlib as mpl
+#     cmap = plt.cm.get_cmap("jet")
+#     norm = mpl.colors.SymLogNorm(2, vmin=legend_loop.min(), vmax=legend_loop.max())
+#     sm = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
+#     sm.set_array([])
+#
+#     # frac_stat_el = np.round(np.sort(np.unique(np.array(df['frac_of_static_elements'])))[::-1], decimals=2)
+#     # frac_of_mem_el = np.round(np.sort(np.unique(np.array(df[key_x]))), decimals=2)
+#
+#
+#     # y_data = df_grr.reset_index()
+#     # err_y = df_grvar.reset_index()
+#     y_data = df
+#
+#     ymax = 0
+#     ymin = 1e8
+#     # ymin_max = None
+#     fig = plt.figure('', figsize=figsize)
+#     ax = fig.subplots(nrows=1, ncols=1)
+#     for i, r in enumerate(legend_loop):
+#     # for i, r in enumerate([.7]):
+#     #     print(r)
+#         # if i % 2 ==0:
+#         # r=.5
+#         y = [y_data.loc[(y_data[key_legend] == r) & (y_data[key_x] == fr)][key_y] for fr in x_loop]
+#         # normalize=True
+#         if normalize:
+#             max_val = np.array([np.max(a.values) for a in y]).max()
+#             min_val = np.array([np.min(a.values) for a in y]).min()
+#             # y_norm = [(y[i] - np.min(y))/(np.max(y)-np.min(y)) for i in range(len(y))]
+#             y_norm = [(y[i].values - min_val)/(max_val-min_val) for i in range(len(y))]
+#             yplot = y_norm
+#         else:
+#             yplot = y
+#         y_mean = np.array([yplot[i].mean() for i in range(len(y))])
+#         if error == 'sem':
+#             e = np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
+#         elif error == 'std':
+#             e = np.array([yplot[i].std(ddof=1) for i in range(len(y))])
+#
+#         if y_mean.max() > ymax:
+#             ymax = y_mean.max()
+#         if y_mean.min() < ymin:
+#             ymin = y_mean.min()
+#
+#         if 'Memristor density' in legendlabel:
+#             if log_scale == True:
+#                 ax.semilogy(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^', )
+#             else:
+#                 ax.plot(x_loop, y_mean, label='{:.1f}'.format(r), color=cmap(norm(r)), marker='^',)
+#         else:
+#             ratio_lab = ['2', '10', '100', r'$1x10^3$', r'$1x10^4$', r'$1x10^5$', r'$1x10^6$']
+#             ratio_list = [2, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
+#             if log_scale==True:
+#                 ax.semilogy(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]), color=cmap(norm(r)), marker='^', )
+#             else:
+#                 ax.plot(x_loop, y_mean, label='{:.0e}'.format(r), color=cmap(norm(r)), marker='^', )
+#         ax.fill_between(x_loop, y_mean - e, y_mean + e, alpha=0.2, color=cmap(norm(r)))
+#         # linestyle = {"linestyle": "--", "linewidth": 4, "markeredgewidth": 5, "elinewidth": 5, "capsize": 10}
+#         # ax.errorbar(frac_of_mem_el, y_mean, yerr=e, label='{:.0e}'.format(r), color=cmap(norm(r)))
+#
+#     a=0
+#     if (ymin_max is None) or (ymin_max[1] > ymax):
+#         ymin_max = [ymin, ymax]
+#     if log_scale == True:
+#         fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
+#         fontdict_label = {'weight': 'bold', 'size': '20', 'color': 'black'}
+#         # add_ticks = add_yticks
+#         # data = [math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
+#         # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
+#         # ax.set_yticks(ticks)
+#         # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
+#         ax.set_ylabel(ylabel, fontdict=fontdict_label)
+#         labels = ax.get_xticklabels() + ax.get_yticklabels()
+#         [label.set_fontweight('bold') for label in labels]
+#
+#         # set_ticks_label(ax=ax, ax_type='y',
+#         #                 num=4,
+#         #                 # data=np.reshape([max_list, min_list], -1),
+#         #                 data=[ math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
+#         #                 ticks=ticks,
+#         #                 ax_label=ylabel,
+#         #                 # valfmt=valfmt,
+#         #                 fontdict_ticks_label={'size': 'large'},
+#         #                 fontdict_label={'color': 'black'},
+#         #                 scale='log')
+#     else:
+#         set_ticks_label(ax=ax, ax_label=ylabel,
+#                         data=np.array(ymin_max),
+#                         valfmt="{x:.5f}",
+#                         add_ticks=add_yticks,
+#                         ax_type='y', num=3,
+#                         )
+#     if ymin_max is not None:
+#         plt.ylim((ymin_max[0], ymin_max[1]))
+#     set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
+#                     # ticks=np.unique(np.round(x_loop, decimals=2)))
+#                     )
+#     set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc)
+#     plt.tight_layout()
+#     if log_scale==True:
+#         plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
+#     else:
+#         plt.savefig(join(save_path + '{:s}_{:s}.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
+#     plt.show()
+#     plt.close('all')
 
 
 
@@ -159,7 +159,7 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
                         legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
                         log_scale=None,
                         rTh_log=.0,
-                        format='svg', dpi=1200):
+                        format='svg', dpi=1200, z=1):
 
     cmap = plt.cm.get_cmap("jet")
     norm = mpl.colors.SymLogNorm(2, vmin=legend_loop.min(), vmax=legend_loop.max())
@@ -167,7 +167,7 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
     sm.set_array([])
 
     fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-    fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+    fontdict_label = {'weight': 'bold', 'size': 23, 'color': 'black'}
 
     figsize = (24, 9)
     fig = plt.figure(figsize=figsize)
@@ -181,9 +181,9 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
         yplot = y
         y_mean = np.array([yplot[i].mean() for i in range(len(y))])
         if error == 'sem':
-            e = np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
+            e = z*np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
         elif error == 'std':
-            e = np.array([yplot[i].std(ddof=1) for i in range(len(y))])
+            e = z*np.array([yplot[i].std(ddof=1) for i in range(len(y))])
 
         if 'Mem' in legendlabel:
             if (log_scale == True) and (r>=rTh_log):
@@ -214,6 +214,7 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
             set_ticks_label(ax=ax,
                             ax_label='',#ylabel,
                             data=np.array(y_mean),
+
                             valfmt="{x:.1e}",
                             # add_ticks=add_yticks,
                             ax_type='y', num=3,
@@ -225,18 +226,16 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
                         )
         if i>4:
             ax.set_xlabel(xlabel, fontdict=fontdict_label)
-
-        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc, fontsize="xx-large")
+        set_legend(ax=ax, title=legendlabel, ncol=1, loc=loc, fontsize=16, title_fontsize=16)
 
     plt.tight_layout()
     if log_scale==True:
-        plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
+        plt.savefig(join(save_path + '{:s}_{:s}_log_{:s}z{:.2f}.{:s}'.format(name_fig, key_y, error, z, format)), format=format, dpi=dpi)
     else:
         plt.savefig(join(save_path + 'sep_{:s}_{:s}.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
     plt.show()
-    a=0
     plt.close('all')
-
+    a=0
 
 
 if __name__ == "__main__":
@@ -327,7 +326,7 @@ if __name__ == "__main__":
     df = df.loc[df['batch'] < 100]
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm_AbovePerc/'
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm_belowPerc/'
-    save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm_AroundPerc/'
+    # save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm_AroundPerc/'
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     # save_path_figures = save_path_ds.split('DS')[0] + 'Figures/'
     utils.ensure_dir(save_path_figures)
@@ -343,8 +342,7 @@ if __name__ == "__main__":
 
     ### Ratio fixed
     save_path_figures_PLeg = save_path_figures + 'Ratio_fixed/'
-    
-    ##################### To obtain S7 #####################################
+
     # for name_fold, norm, log_scale, ymin_max, ylab, key in zip(['G/','G_norm/'],
     #                                                 [False, True],
     #                                                 [False, False],
@@ -381,22 +379,22 @@ if __name__ == "__main__":
     #                         name_fig='{:.0e}'.format(rat),
     #                         error='std')
 
-    plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
-                        log_scale=log_scale,
-                        rTh_log=.6,
-                        key_y=key,
-                        key_x='Vbias',
-                        key_legend='frac_of_mem_elements',
-                        ylabel=ylab,
-                        ymin_max=ymin_max,
-                        save_path=save_path_figures_G_norm,
-                        normalize=norm,
-                        xlabel='V [a.u.]\nVoltage input',
-                        legendlabel='Mem. dens.\n        p',
-                        legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-                        x_loop=np.sort(np.unique(np.array(df['Vbias']))),
-                        name_fig='{:.0e}'.format(rat),
-                        error='std')
+    # plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
+    #                     log_scale=log_scale,
+    #                     rTh_log=.6,
+    #                     key_y=key,
+    #                     key_x='Vbias',
+    #                     key_legend='frac_of_mem_elements',
+    #                     ylabel=ylab,
+    #                     ymin_max=ymin_max,
+    #                     save_path=save_path_figures_G_norm,
+    #                     normalize=norm,
+    #                     xlabel='V [a.u.]\nVoltage input',
+    #                     legendlabel='Mem. dens.\n        p',
+    #                     legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
+    #                     x_loop=np.sort(np.unique(np.array(df['Vbias']))),
+    #                     name_fig='{:.0e}'.format(rat),
+    #                     error='std')
 
     plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
                                   log_scale=log_scale,
@@ -414,7 +412,30 @@ if __name__ == "__main__":
                                                        decimals=2),
                                   x_loop=np.sort(np.unique(np.array(df['Vbias']))),
                                   name_fig='all_log_{:.0e}'.format(rat),
-                                  error='std')
+                                  error='sem',
+                                  z=1.96
+                                  # z=2.576
+                                  )
 
+    plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
+                                  log_scale=log_scale,
+                                  rTh_log=.0,
+                                  key_y=key,
+                                  key_x='Vbias',
+                                  key_legend='frac_of_mem_elements',
+                                  ylabel=ylab,
+                                  ymin_max=ymin_max,
+                                  save_path=save_path_figures_G_norm,
+                                  normalize=norm,
+                                  xlabel='V [a.u.]\nVoltage input',
+                                  legendlabel='Mem. dens.\n        p',
+                                  legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))),
+                                                       decimals=2),
+                                  x_loop=np.sort(np.unique(np.array(df['Vbias']))),
+                                  name_fig='all_log_{:.0e}'.format(rat),
+                                  error='std',
+                                  z=.3
+                                  # z=2.576
+                                  )
     a=0
 

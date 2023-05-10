@@ -37,10 +37,11 @@ import math
 def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_legend,
                         ylabel=None, normalize=False,
                         xlabel='p', error='std', ymin_max=None,
+                        rTh_log=0,
                         name_fig='', loc=2, figsize=(8, 6), add_yticks=[],
                         legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
                         log_scale=None,
-                        format='svg', dpi=1200):
+                        format='svg', dpi=1200, z=1):
 
     import matplotlib as mpl
     cmap = plt.cm.get_cmap("jet")
@@ -50,7 +51,7 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
 
     y_data = df
 
-    figsize=(12, 16)
+    figsize=(12, 14)
     fig = plt.figure(figsize=figsize)
     gs = fig.add_gridspec(ncols=2, nrows=8)
     ax1 = fig.add_subplot(gs[1:3, 0])
@@ -80,9 +81,9 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
             yplot = y
         y_mean = np.array([yplot[i].mean() for i in range(len(y))])
         if error == 'sem':
-            e = np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
+            e = z*np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
         elif error == 'std':
-            e = np.array([yplot[i].std(ddof=1) for i in range(len(y))])
+            e = z * np.array([yplot[i].std(ddof=1) for i in range(len(y))])
 
         if 'Memristor density' in legendlabel:
             if log_scale == True:
@@ -95,7 +96,7 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
                         color=colors[i])
                         # color=cmap(norm(r)), marker='^',)
         else:
-            if (log_scale == True) and (r >= 1e3):
+            if (log_scale == True) and (r >= rTh_log):
                 ax.semilogy(x_loop, y_mean, label='{:s}'.format(ratio_lab[ratio_list.index(r)]),
                             color=colors[i],
                             # color=cmap(norm(r)),
@@ -109,9 +110,9 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
                         color=colors[i])
                         # color=cmap(norm(r)))
 
-        if (log_scale == True) and (r>=1e3):
-            fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-            fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+        fontdict_label = {'weight': 'bold', 'size': '20', 'color': 'black'}
+        if (log_scale == True) and (r>=rTh_log):
+            fontdict_ticks_label = {'weight': 'bold', 'size': 16}
             # add_ticks = add_yticks
             # data = [math.floor(math.log(np.min(ymin_max), 10)), 1 + math.floor(math.log(np.max(ymin_max), 10))],
             # ticks = np.concatenate((np.logspace(start=np.min(data), stop=np.max(data), num=4, endpoint=True), add_ticks))
@@ -119,29 +120,32 @@ def plot_ent_vs_fracMem(df, save_path, legend_loop, x_loop, key_y, key_x, key_le
             # ax.set_yticklabels(ticks, fontdict=fontdict_ticks_label)
             labels = ax.get_yticklabels() + ax.get_yticklabels('minor')
             [label.set_fontweight('bold') for label in labels]
-            [label.set_size('xx-large') for label in labels]
+            [label.set_size(fontdict_ticks_label['size']) for label in labels]
+            ax.set_ylabel(ylab, fontdict=fontdict_label)
 
         else:
             set_ticks_label(ax=ax, ax_label=ylabel,
-                                data=y_mean,
-                                valfmt="{x:.2e}",
-                                add_ticks=add_yticks,
-                                ax_type='y', num=3,
-                                )
+                            fontdict_label=fontdict_label,
+                            data=y_mean,
+                            valfmt="{x:.2e}",
+                            add_ticks=add_yticks,
+                            ax_type='y', num=3,
+                            )
         if (r==100) or (r==1e6):
             set_ticks_label(ax=ax, ax_label=xlabel, data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
                             # ticks=np.unique(np.round(x_loop, decimals=2)))
                             )
         else:
             set_ticks_label(ax=ax, ax_label='p', data=x_loop, ax_type='x', num=5, valfmt="{x:.1f}",
+                            fontdict_label=fontdict_label,
                             # ticks=np.unique(np.round(x_loop, decimals=2)))
                             )
-        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc)
+        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc, fontsize=20, title_fontsize=20)
     plt.tight_layout()
     # plt.show()
 
     if log_scale==True:
-        plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
+        plt.savefig(join(save_path + '{:s}_{:s}_log_{:s}z{:.2f}.{:s}'.format(name_fig, key_y, error, z, format)), format=format, dpi=dpi)
     else:
         plt.savefig(join(save_path + '{:s}_{:s}.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
     plt.show()
@@ -236,8 +240,8 @@ if __name__ == "__main__":
     save_path_figures = save_path_ds.split('DS')[0] + 'Figures_NewNorm/'
     utils.ensure_dir(save_path_figures)
 
-    # v=2.5
-    v=8
+    
+    v=2.5
     if v==8:
         log=True
     else: log=False
@@ -253,36 +257,45 @@ if __name__ == "__main__":
     # ########################### Fixed Voltage #########################
     save_path_figures_vbias = save_path_figures + 'Vbias_fixed/'
 
-    for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
+    # for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
+    #
+    #     # Plot (pure) conductance
+    #     for name_fold, norm, log_scale, ymin_max, ylab in zip(['G/', 'G_norm/'],
+    #                                                      [False, True], # norm
+    #                                                     [log, False], #logscale
+    #                                                [None, None],
+    #                                                ['Conductance\n'+r'$\mathbf{G_{nw}}$'+' [a.u.]', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
+    #                                                           # [r'$\mathbf{G_{nw}}$'+' [a.u.]',
+    #                                                           #  'Conductance\n' + r'$\mathbf{G_{nw}^{norm}}$']):
 
-        # Plot (pure) conductance
-        for name_fold, norm, log_scale, ymin_max, ylab in zip(['G/', 'G_norm/'],
-                                                         [False, True], # norm
-                                                        [log, False], #logscale
-                                                   [None, None],
-                                                   ['Conductance\n'+r'$\mathbf{G_{nw}}$'+' [a.u.]', 'Conductance\n'+r'$\mathbf{G_{nw}^{norm}}$']):
-                                                              # [r'$\mathbf{G_{nw}}$'+' [a.u.]',
-                                                              #  'Conductance\n' + r'$\mathbf{G_{nw}^{norm}}$']):
-            save_path_figures_G_norm = save_path_figures_vbias + name_fold
-            utils.ensure_dir(save_path_figures_G_norm)
-            for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
-                plot_ent_vs_fracMem(df=df[df['Vbias'].isin([v])],
-                                    key_y='G',
-                                    normalize=norm,
-                                    log_scale=log_scale,
-                                    key_x='frac_of_mem_elements',
-                                    key_legend='ratio',
-                                    ylabel=ylab,
-                                    save_path=save_path_figures_G_norm,
-                                    xlabel='p\nMemristor density',
-                                    # legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
-                                    legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
-                                    ymin_max=ymin_max,
-                                    # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
-                                    # ratio=np.sort(df['ratio'].unique()),
-                                    legend_loop=np.round(np.sort(np.unique(np.array(df['ratio']))), decimals=2),
-                                    x_loop=np.sort(np.unique(np.array(df['frac_of_mem_elements']))),
-                                    name_fig='Vbias{:.2f}'.format(v),
-                                    error='std')
+    name_fold = 'G/'
+    norm = False
+    log_scale = True
+    ymin_max = [None, None]
+    ylab = 'Conductance\n' + r'$\mathbf{G_{nw}}$' + ' [a.u.]'
+
+    save_path_figures_G_norm = save_path_figures_vbias + name_fold
+    utils.ensure_dir(save_path_figures_G_norm)
+    for v in np.round(np.sort(np.unique(np.array(df['Vbias']))), decimals=2):
+        plot_ent_vs_fracMem(df=df[df['Vbias'].isin([v])],
+                            key_y='G',
+                            normalize=norm,
+                            log_scale=log_scale,
+                            key_x='frac_of_mem_elements',
+                            key_legend='ratio',
+                            ylabel=ylab,
+                            save_path=save_path_figures_G_norm,
+                            xlabel='p\nMemristor density',
+                            # legendlabel='Interaction strength\n'+r'$\mathbf{G_{max}/G_{min}}$',
+                            legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
+                            ymin_max=ymin_max,
+                            # frac_of_mem_el=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
+                            # ratio=np.sort(df['ratio'].unique()),
+                            legend_loop=np.round(np.sort(np.unique(np.array(df['ratio']))), decimals=2),
+                            x_loop=np.sort(np.unique(np.array(df['frac_of_mem_elements']))),
+                            name_fig='Vbias{:.2f}'.format(v),
+                            error='sem',
+                            z=1.96)
+                            # z=2.576)
 
     a=0

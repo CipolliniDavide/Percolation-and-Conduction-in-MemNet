@@ -159,7 +159,7 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
                         legendlabel=r'$\mathbf{G_{max}/G_{min}}$',
                         log_scale=None,
                         rTh_log=.0,
-                        format='svg', dpi=1200):
+                        format='svg', dpi=1200, z=1):
 
     cmap = plt.cm.get_cmap("jet")
     norm = mpl.colors.SymLogNorm(2, vmin=legend_loop.min(), vmax=legend_loop.max())
@@ -167,7 +167,7 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
     sm.set_array([])
 
     fontdict_ticks_label = {'weight': 'bold', 'size': 'x-large'}
-    fontdict_label = {'weight': 'bold', 'size': 'xx-large', 'color': 'black'}
+    fontdict_label = {'weight': 'bold', 'size': 25, 'color': 'black'}
 
     figsize = (24, 9)
     fig = plt.figure(figsize=figsize)
@@ -181,9 +181,9 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
         yplot = y
         y_mean = np.array([yplot[i].mean() for i in range(len(y))])
         if error == 'sem':
-            e = np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
+            e = z*np.array([yplot[i].std(ddof=1)/np.sqrt(yplot[i].size) for i in range(len(y))])
         elif error == 'std':
-            e = np.array([yplot[i].std(ddof=1) for i in range(len(y))])
+            e = z*np.array([yplot[i].std(ddof=1) for i in range(len(y))])
 
         if 'Mem' in legendlabel:
             if (log_scale == True) and (r>=rTh_log):
@@ -226,11 +226,12 @@ def plot_ent_vs_fracMem_separated(df, save_path, legend_loop, x_loop, key_y, key
         if i>4:
             ax.set_xlabel(xlabel, fontdict=fontdict_label)
 
-        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc, fontsize="xx-large")
+        set_legend(ax=ax, title=legendlabel, ncol=2, loc=loc, fontsize=20, title_fontsize=20)
 
     plt.tight_layout()
-    if log_scale==True:
-        plt.savefig(join(save_path + '{:s}_{:s}_log.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
+    if log_scale == True:
+        plt.savefig(join(save_path + '{:s}_{:s}_log_{:s}z{:.2f}.{:s}'.format(name_fig, key_y, error, z, format)),
+                    format=format, dpi=dpi)
     else:
         plt.savefig(join(save_path + 'sep_{:s}_{:s}.{:s}'.format(name_fig, key_y, format)), format=format, dpi=dpi)
     plt.show()
@@ -383,7 +384,7 @@ if __name__ == "__main__":
 
     plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
                         log_scale=log_scale,
-                        rTh_log=.5,
+                        rTh_log=.0,
                         key_y=key,
                         key_x='Vbias',
                         key_legend='frac_of_mem_elements',
@@ -396,7 +397,7 @@ if __name__ == "__main__":
                         legend_loop=np.round(np.sort(np.unique(np.array(df['frac_of_mem_elements']))), decimals=2),
                         x_loop=np.sort(np.unique(np.array(df['Vbias']))),
                         name_fig='{:.0e}'.format(rat),
-                        error='std')
+                        error='sem', z=1.96)
 
     plot_ent_vs_fracMem_separated(df=df[df['ratio'].isin([rat])],  # 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])],
                                   log_scale=log_scale,
