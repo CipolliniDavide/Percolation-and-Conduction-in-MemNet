@@ -50,7 +50,10 @@ def rescale_weights(G, scale=(0.0001,1), method='MinMax'):
     G.add_edges_from(edge_list_with_attr)
 
 def connected_components(G):
-    # Return subgraphs from largest to smaller
+    '''
+    :param G: graph in input
+    :return: Return subgraphs from the largest to smaller in size
+    '''
     import networkx as nx
     subgraphs = [G.subgraph(c) for c in nx.connected_components(G) if len(c) > 1]
     sorted_subgraphs = sorted(subgraphs, key=len)
