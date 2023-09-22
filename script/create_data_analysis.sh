@@ -5,12 +5,12 @@ L=21
 diag=0
 
 # For good OC
-w_init='good_OC'
-svp='GridAdiabatic_goodOC'
+#w_init='good_OC'
+#svp='GridAdiabatic_goodOC'
 
 # For Poor OC
-#w_init='None'
-#svp='GridAdiabatic_poorOC'
+w_init='None'
+svp='GridAdiabatic_poorOC'
 
 
 b_start=0
