@@ -90,11 +90,15 @@ def plot_H_evolution(H_Horizon,
                      V_Horizon,
                      coordinates,
                      node_voltage_list,
-                     src, eff_cond_list, desired_eff_conductance, save_path,
+                     src, eff_cond_list,
+                     desired_eff_conductance,
+                     save_path,
                      numeric_label=False,
                      title='',
                      y_label_2ndrow=r'$\mathbf{G_{nw}}$ [S]',
-                     number_of_plots=10, alpha=.25, t1=None,
+                     number_of_plots=10,
+                     alpha=.25,
+                     t1=None,
                      format='png', dpi=1200):
 
     save_path = save_path + '/H_Evolution/'

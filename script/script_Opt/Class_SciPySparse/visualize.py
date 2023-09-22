@@ -3,7 +3,7 @@
 """
 Created on Thu Aug 19 12:04:39 2021
 
-@author: hp
+@author: Davide Cipollini
 """
 import numpy as np
 import networkx as nx
