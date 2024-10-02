@@ -1,5 +1,5 @@
-Repository of the paper "Conduction and entropy analysis of a mixed memristor-resistor model for neuromorphic networks
-, Davide Cipollini and Lambert R B Schomaker"
+Repository of the paper "Conduction and entropy analysis of a mixed memristor-resistor model for neuromorphic networks"
+, Davide Cipollini and Lambert R B Schomaker
 
 https://iopscience.iop.org/article/10.1088/2634-4386/acd6b3#nceacd6b3f1
 
